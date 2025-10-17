@@ -1,15 +1,1056 @@
-i want you to do this now
+import React, { useState } from 'react';
+import { Calculator, Info, Building2, Receipt } from 'lucide-react';
 
-create two tabs - salary split & Tax inputs
+export default function TaxCalculator() {
+  const [activeTab, setActiveTab] = useState('salary');
 
-in salary split tab - add general salary splits that exist in india like - Basic pay, HRA, Special allowance - essentially look at the general splits on how indian offer letters look like and have all of these components
+  // Salary Split State
+  const [basicPay, setBasicPay] = useState('');
+  const [hra, setHra] = useState('');
+  const [specialAllowance, setSpecialAllowance] = useState('');
+  const [lta, setLta] = useState('');
+  const [otherAllowances, setOtherAllowances] = useState('');
+  const [performanceBonus, setPerformanceBonus] = useState('');
+  const [employerPF, setEmployerPF] = useState(''); // Auto-calculated
+  const [professionalTax, setProfessionalTax] = useState('2400'); // Standard PT
 
-in the second tab - add Tax details - all relevant tax splits like - HRA, ELSS, Health insurance etc., and group them in major buckets like 80c 80d etc., read on this online - also have max that they can claim in the text below the box
+  // Tax Deductions State - Section 80C
+  const [ppf, setPpf] = useState('');
+  const [elss, setElss] = useState('');
+  const [lifeInsurance, setLifeInsurance] = useState('');
+  const [tuitionFees, setTuitionFees] = useState('');
+  const [homeLoanPrincipal, setHomeLoanPrincipal] = useState('');
+  const [epfContribution, setEpfContribution] = useState(''); // Auto-calculated
+  const [other80C, setOther80C] = useState('');
 
-now when somebody fills all of this - have two boxes like you already did on tax in new regime and tax in old regime and also have in hand salary per month
+  // Section 80D
+  const [selfHealthInsurance, setSelfHealthInsurance] = useState('');
+  const [parentsHealthInsurance, setParentsHealthInsurance] = useState('');
+  const [isSelfSenior, setIsSelfSenior] = useState(false);
+  const [isParentsSenior, setIsParentsSenior] = useState(false);
+  const [preventiveCheckup, setPreventiveCheckup] = useState('');
 
-please note - if salary has components like LTA, year end bonus and PF
+  // Other Deductions
+  const [nps80CCD1B, setNps80CCD1B] = useState('');
+  const [nps80CCD2, setNps80CCD2] = useState(''); // Employer contribution
+  const [eduLoanInterest, setEduLoanInterest] = useState('');
+  const [homeLoanInterest, setHomeLoanInterest] = useState('');
+  const [donations80G, setDonations80G] = useState('');
 
-show in hand salary - add money added to PF every month, year end bonus value after tax
+  // HRA Details
+  const [rentPaid, setRentPaid] = useState('');
+  const [isMetro, setIsMetro] = useState(true);
+  const [ltaClaimed, setLtaClaimed] = useState('');
 
-please ensure that you do calculations after reading through about this and how these calculations work !
+  // Calculate total CTC
+  const calculateCTC = () => {
+    const basic = parseFloat(basicPay) || 0;
+    const hraAmt = parseFloat(hra) || 0;
+    const special = parseFloat(specialAllowance) || 0;
+    const ltaAmt = parseFloat(lta) || 0;
+    const other = parseFloat(otherAllowances) || 0;
+    const bonus = parseFloat(performanceBonus) || 0;
+    const employerPFAmt = basic * 0.12; // 12% of Basic
+
+    return basic + hraAmt + special + ltaAmt + other + bonus + employerPFAmt;
+  };
+
+  // Calculate Gross Salary (excluding employer PF)
+  const calculateGrossSalary = () => {
+    const basic = parseFloat(basicPay) || 0;
+    const hraAmt = parseFloat(hra) || 0;
+    const special = parseFloat(specialAllowance) || 0;
+    const ltaAmt = parseFloat(lta) || 0;
+    const other = parseFloat(otherAllowances) || 0;
+    const bonus = parseFloat(performanceBonus) || 0;
+
+    return basic + hraAmt + special + ltaAmt + other + bonus;
+  };
+
+  // Calculate Employee PF (12% of Basic)
+  const calculateEmployeePF = () => {
+    const basic = parseFloat(basicPay) || 0;
+    return basic * 0.12;
+  };
+
+  // Calculate HRA Exemption
+  const calculateHRAExemption = () => {
+    const annualHRA = parseFloat(hra) || 0;
+    const annualRent = (parseFloat(rentPaid) || 0) * 12;
+    const basic = parseFloat(basicPay) || 0;
+
+    if (!annualHRA || !annualRent) return 0;
+
+    const exemption1 = annualHRA;
+    const exemption2 = annualRent - (basic * 0.1);
+    const exemption3 = basic * (isMetro ? 0.5 : 0.4);
+
+    return Math.max(0, Math.min(exemption1, exemption2, exemption3));
+  };
+
+  // Calculate LTA Exemption
+  const calculateLTAExemption = () => {
+    const ltaAmount = parseFloat(lta) || 0;
+    const ltaClaimedAmount = parseFloat(ltaClaimed) || 0;
+    return Math.min(ltaAmount, ltaClaimedAmount);
+  };
+
+  // Calculate Section 80C Total
+  const calculate80CTotal = () => {
+    const total = (parseFloat(ppf) || 0) +
+      (parseFloat(elss) || 0) +
+      (parseFloat(lifeInsurance) || 0) +
+      (parseFloat(tuitionFees) || 0) +
+      (parseFloat(homeLoanPrincipal) || 0) +
+      (calculateEmployeePF()) +
+      (parseFloat(other80C) || 0);
+
+    return Math.min(total, 150000);
+  };
+
+  // Calculate Section 80D Total
+  const calculate80DTotal = () => {
+    const selfLimit = isSelfSenior ? 50000 : 25000;
+    const parentsLimit = isParentsSenior ? 50000 : 25000;
+
+    const selfInsurance = Math.min((parseFloat(selfHealthInsurance) || 0), selfLimit);
+    const parentsInsurance = Math.min((parseFloat(parentsHealthInsurance) || 0), parentsLimit);
+    const checkup = Math.min((parseFloat(preventiveCheckup) || 0), 5000);
+
+    // Checkup is within the overall limit
+    const totalSelf = Math.min(selfInsurance + checkup, selfLimit);
+    const totalParents = Math.min(parentsInsurance, parentsLimit);
+
+    return totalSelf + totalParents;
+  };
+
+  // Calculate Old Regime Tax
+  const calculateOldRegimeTax = () => {
+    const grossSalary = calculateGrossSalary();
+    const standardDeduction = 50000;
+    const hraExemption = calculateHRAExemption();
+    const ltaExemption = calculateLTAExemption();
+    const section80C = calculate80CTotal();
+    const section80D = calculate80DTotal();
+    const nps80CCD1BAmount = Math.min((parseFloat(nps80CCD1B) || 0), 50000);
+    const eduLoan = parseFloat(eduLoanInterest) || 0;
+    const homeLoanInt = Math.min((parseFloat(homeLoanInterest) || 0), 200000);
+    const donations = (parseFloat(donations80G) || 0) * 0.5; // Assuming 50% deduction
+
+    let taxableIncome = grossSalary 
+      - standardDeduction 
+      - hraExemption 
+      - ltaExemption
+      - section80C 
+      - section80D 
+      - nps80CCD1BAmount 
+      - eduLoan 
+      - homeLoanInt 
+      - donations;
+
+    taxableIncome = Math.max(0, taxableIncome);
+
+    // Calculate tax
+    let tax = 0;
+    if (taxableIncome <= 250000) {
+      tax = 0;
+    } else if (taxableIncome <= 500000) {
+      tax = (taxableIncome - 250000) * 0.05;
+    } else if (taxableIncome <= 1000000) {
+      tax = 12500 + (taxableIncome - 500000) * 0.2;
+    } else {
+      tax = 12500 + 100000 + (taxableIncome - 1000000) * 0.3;
+    }
+
+    // Rebate under 87A
+    if (taxableIncome <= 500000) {
+      tax = Math.max(0, tax - 12500);
+    }
+
+    // Add cess
+    tax = tax * 1.04;
+
+    return {
+      taxableIncome: Math.round(taxableIncome),
+      tax: Math.round(tax),
+      deductions: {
+        standard: standardDeduction,
+        hra: Math.round(hraExemption),
+        lta: Math.round(ltaExemption),
+        section80C: Math.round(section80C),
+        section80D: Math.round(section80D),
+        nps80CCD1B: Math.round(nps80CCD1BAmount),
+        eduLoan: Math.round(eduLoan),
+        homeLoanInt: Math.round(homeLoanInt),
+        donations: Math.round(donations)
+      }
+    };
+  };
+
+  // Calculate New Regime Tax
+  const calculateNewRegimeTax = () => {
+    const grossSalary = calculateGrossSalary();
+    const standardDeduction = 75000;
+    const nps80CCD2Amount = parseFloat(nps80CCD2) || 0; // Employer NPS available in new regime
+
+    let taxableIncome = grossSalary - standardDeduction - nps80CCD2Amount;
+    taxableIncome = Math.max(0, taxableIncome);
+
+    // Calculate tax with FY 2024-25 slabs
+    let tax = 0;
+    if (taxableIncome <= 300000) {
+      tax = 0;
+    } else if (taxableIncome <= 700000) {
+      tax = (taxableIncome - 300000) * 0.05;
+    } else if (taxableIncome <= 1000000) {
+      tax = 20000 + (taxableIncome - 700000) * 0.1;
+    } else if (taxableIncome <= 1200000) {
+      tax = 20000 + 30000 + (taxableIncome - 1000000) * 0.15;
+    } else if (taxableIncome <= 1500000) {
+      tax = 20000 + 30000 + 30000 + (taxableIncome - 1200000) * 0.2;
+    } else {
+      tax = 20000 + 30000 + 30000 + 60000 + (taxableIncome - 1500000) * 0.3;
+    }
+
+    // Rebate under 87A
+    if (taxableIncome <= 700000) {
+      tax = Math.max(0, tax - 25000);
+    }
+
+    // Add cess
+    tax = tax * 1.04;
+
+    return {
+      taxableIncome: Math.round(taxableIncome),
+      tax: Math.round(tax),
+      deductions: {
+        standard: standardDeduction,
+        nps80CCD2: Math.round(nps80CCD2Amount)
+      }
+    };
+  };
+
+  const oldRegime = calculateOldRegimeTax();
+  const newRegime = calculateNewRegimeTax();
+
+  // Calculate Monthly In-Hand Salary
+  const calculateInHandSalary = (taxRegime) => {
+    const grossSalary = calculateGrossSalary();
+    const employeePF = calculateEmployeePF();
+    const pt = parseFloat(professionalTax) || 0;
+    const bonus = parseFloat(performanceBonus) || 0;
+    const tax = taxRegime === 'old' ? oldRegime.tax : newRegime.tax;
+
+    // Annual in-hand without bonus
+    const annualInHand = grossSalary - bonus - employeePF - pt - tax;
+    
+    // Monthly in-hand
+    const monthlyInHand = annualInHand / 12;
+
+    // Bonus after tax (simplified - assuming bonus taxed at average rate)
+    const avgTaxRate = tax / (grossSalary - (taxRegime === 'old' ? 
+      (oldRegime.deductions.standard + oldRegime.deductions.hra + oldRegime.deductions.lta + 
+       oldRegime.deductions.section80C + oldRegime.deductions.section80D + 
+       oldRegime.deductions.nps80CCD1B + oldRegime.deductions.eduLoan + 
+       oldRegime.deductions.homeLoanInt + oldRegime.deductions.donations) : 
+      (newRegime.deductions.standard + newRegime.deductions.nps80CCD2)));
+    
+    const bonusAfterTax = bonus * (1 - (avgTaxRate || 0));
+
+    return {
+      monthly: monthlyInHand,
+      pfPerMonth: employeePF / 12,
+      bonusAfterTax: bonusAfterTax
+    };
+  };
+
+  const oldRegimeInHand = calculateInHandSalary('old');
+  const newRegimeInHand = calculateInHandSalary('new');
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Calculator className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-3xl font-bold text-gray-800">India Tax Calculator FY 2024-25</h1>
+          </div>
+
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+            <div className="flex gap-2">
+              <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-800">
+                Enter your salary components and tax-saving investments to compare Old vs New tax regimes for FY 2024-25 (AY 2025-26)
+              </p>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-4 mb-6 border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('salary')}
+              className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-2 transition-all ${
+                activeTab === 'salary'
+                  ? 'border-indigo-600 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Building2 className="w-5 h-5" />
+              Salary Split
+            </button>
+            <button
+              onClick={() => setActiveTab('tax')}
+              className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-2 transition-all ${
+                activeTab === 'tax'
+                  ? 'border-indigo-600 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Receipt className="w-5 h-5" />
+              Tax Inputs
+            </button>
+          </div>
+
+          {/* Salary Split Tab */}
+          {activeTab === 'salary' && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Annual CTC Breakdown</h3>
+                <p className="text-sm text-gray-600 mb-4">Enter all components of your annual salary as per your offer letter</p>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Basic Pay (₹/year) *
+                      <span className="text-xs text-gray-500 block mt-1">Typically 40-50% of CTC</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={basicPay}
+                      onChange={(e) => setBasicPay(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., 600000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      House Rent Allowance - HRA (₹/year)
+                      <span className="text-xs text-gray-500 block mt-1">Typically 40-50% of Basic</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={hra}
+                      onChange={(e) => setHra(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., 240000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Special Allowance (₹/year)
+                      <span className="text-xs text-gray-500 block mt-1">Balancing component, fully taxable</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={specialAllowance}
+                      onChange={(e) => setSpecialAllowance(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., 300000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Leave Travel Allowance - LTA (₹/year)
+                      <span className="text-xs text-gray-500 block mt-1">Tax exempt if travel bills submitted</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={lta}
+                      onChange={(e) => setLta(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., 30000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Other Allowances (₹/year)
+                      <span className="text-xs text-gray-500 block mt-1">Medical, Conveyance, etc.</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={otherAllowances}
+                      onChange={(e) => setOtherAllowances(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., 50000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Performance/Year-end Bonus (₹/year)
+                      <span className="text-xs text-gray-500 block mt-1">Variable pay component</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={performanceBonus}
+                      onChange={(e) => setPerformanceBonus(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., 100000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Professional Tax (₹/year)
+                      <span className="text-xs text-gray-500 block mt-1">State-specific, usually ₹2,400</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={professionalTax}
+                      onChange={(e) => setProfessionalTax(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="e.g., 2400"
+                    />
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg border-2 border-indigo-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Employee PF Contribution (Auto-calculated)
+                      <span className="text-xs text-gray-500 block mt-1">12% of Basic Pay</span>
+                    </label>
+                    <div className="text-2xl font-bold text-indigo-600">
+                      {formatCurrency(calculateEmployeePF())}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 p-4 bg-white rounded-lg border-2 border-indigo-300">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Total Annual CTC</p>
+                      <p className="text-2xl font-bold text-indigo-600">{formatCurrency(calculateCTC())}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Gross Salary (Excluding Employer PF)</p>
+                      <p className="text-2xl font-bold text-gray-700">{formatCurrency(calculateGrossSalary())}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tax Inputs Tab */}
+          {activeTab === 'tax' && (
+            <div className="space-y-6">
+              {/* Section 80C */}
+              <div className="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Section 80C Deductions</h3>
+                <p className="text-sm text-gray-600 mb-1">Maximum total deduction: ₹1,50,000</p>
+                <p className="text-xs text-red-600 mb-4">Available only in Old Tax Regime</p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Public Provident Fund - PPF (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={ppf}
+                      onChange={(e) => setPpf(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="e.g., 50000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Equity Linked Savings Scheme - ELSS (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={elss}
+                      onChange={(e) => setElss(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="e.g., 50000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Life Insurance Premium (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={lifeInsurance}
+                      onChange={(e) => setLifeInsurance(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="e.g., 20000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tuition Fees (Max 2 children) (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={tuitionFees}
+                      onChange={(e) => setTuitionFees(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="e.g., 30000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Home Loan Principal Repayment (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={homeLoanPrincipal}
+                      onChange={(e) => setHomeLoanPrincipal(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="e.g., 100000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Other 80C Investments (₹)
+                      <span className="text-xs text-gray-500 block mt-1">NSC, Tax-saving FD, SSY, etc.</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={other80C}
+                      onChange={(e) => setOther80C(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="e.g., 25000"
+                    />
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg border-2 border-orange-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Employee PF (Auto-included in 80C)
+                    </label>
+                    <div className="text-xl font-bold text-orange-600">
+                      {formatCurrency(calculateEmployeePF())}
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg border-2 border-orange-300">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Total 80C Deduction (Max ₹1.5L)
+                    </label>
+                    <div className="text-xl font-bold text-orange-600">
+                      {formatCurrency(calculate80CTotal())}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 80D */}
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Section 80D - Health Insurance</h3>
+                <p className="text-sm text-gray-600 mb-1">Self/Spouse/Children: ₹25,000 (₹50,000 if senior citizen)</p>
+                <p className="text-sm text-gray-600 mb-1">Parents: Additional ₹25,000 (₹50,000 if senior citizen)</p>
+                <p className="text-xs text-red-600 mb-4">Available only in Old Tax Regime</p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Health Insurance - Self/Spouse/Children (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={selfHealthInsurance}
+                      onChange={(e) => setSelfHealthInsurance(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      placeholder="e.g., 25000"
+                    />
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        id="selfSenior"
+                        checked={isSelfSenior}
+                        onChange={(e) => setIsSelfSenior(e.target.checked)}
+                        className="w-4 h-4 text-green-600 rounded"
+                      />
+                      <label htmlFor="selfSenior" className="text-xs text-gray-600">
+                        Self/Spouse is 60+ years (Senior Citizen - Limit ₹50k)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Health Insurance - Parents (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={parentsHealthInsurance}
+                      onChange={(e) => setParentsHealthInsurance(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      placeholder="e.g., 50000"
+                    />
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        id="parentsSenior"
+                        checked={isParentsSenior}
+                        onChange={(e) => setIsParentsSenior(e.target.checked)}
+                        className="w-4 h-4 text-green-600 rounded"
+                      />
+                      <label htmlFor="parentsSenior" className="text-xs text-gray-600">
+                        Parents are 60+ years (Senior Citizen - Limit ₹50k)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Preventive Health Checkup (₹)
+                      <span className="text-xs text-gray-500 block mt-1">Max ₹5,000 (within overall 80D limit)</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={preventiveCheckup}
+                      onChange={(e) => setPreventiveCheckup(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      placeholder="e.g., 5000"
+                    />
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg border-2 border-green-300">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Total 80D Deduction (Max ₹1L)
+                    </label>
+                    <div className="text-xl font-bold text-green-600">
+                      {formatCurrency(calculate80DTotal())}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 80CCD - NPS */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Section 80CCD - National Pension System (NPS)</h3>
+                <p className="text-sm text-gray-600 mb-4">Additional tax benefits beyond 80C limits</p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      80CCD(1B) - Employee NPS Contribution (₹)
+                      <span className="text-xs text-gray-500 block mt-1">Max ₹50,000 - Over & above 80C limit</span>
+                      <span className="text-xs text-green-600 block mt-1">✓ Available in BOTH regimes</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={nps80CCD1B}
+                      onChange={(e) => setNps80CCD1B(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="e.g., 50000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      80CCD(2) - Employer NPS Contribution (₹)
+                      <span className="text-xs text-gray-500 block mt-1">Max 10% of Basic (14% for Govt)</span>
+                      <span className="text-xs text-green-600 block mt-1">✓ Available in BOTH regimes</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={nps80CCD2}
+                      onChange={(e) => setNps80CCD2(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="e.g., 60000"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Other Deductions */}
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Other Deductions</h3>
+                <p className="text-xs text-red-600 mb-4">Available only in Old Tax Regime (except NPS employer contribution)</p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Section 80E - Education Loan Interest (₹)
+                      <span className="text-xs text-gray-500 block mt-1">No upper limit, for 8 years max</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={eduLoanInterest}
+                      onChange={(e) => setEduLoanInterest(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., 50000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Section 24(b) - Home Loan Interest (₹)
+                      <span className="text-xs text-gray-500 block mt-1">Max ₹2,00,000 for self-occupied property</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={homeLoanInterest}
+                      onChange={(e) => setHomeLoanInterest(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., 200000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Section 80G - Donations to Charity (₹)
+                      <span className="text-xs text-gray-500 block mt-1">50% or 100% deductible based on institution</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={donations80G}
+                      onChange={(e) => setDonations80G(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., 10000"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* HRA & LTA */}
+              <div className="bg-gradient-to-r from-yellow-50 to-amber-50 p-6 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">HRA & LTA Exemptions</h3>
+                <p className="text-xs text-red-600 mb-4">Available only in Old Tax Regime</p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Monthly Rent Paid (₹)
+                      <span className="text-xs text-gray-500 block mt-1">For HRA exemption calculation</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={rentPaid}
+                      onChange={(e) => setRentPaid(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                      placeholder="e.g., 25000"
+                    />
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="checkbox"
+                        id="metro"
+                        checked={isMetro}
+                        onChange={(e) => setIsMetro(e.target.checked)}
+                        className="w-4 h-4 text-yellow-600 rounded"
+                      />
+                      <label htmlFor="metro" className="text-xs text-gray-600">
+                        Living in Metro City (Delhi/Mumbai/Kolkata/Chennai)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      LTA Claimed Amount (₹)
+                      <span className="text-xs text-gray-500 block mt-1">Actual travel bills submitted</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={ltaClaimed}
+                      onChange={(e) => setLtaClaimed(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                      placeholder="e.g., 30000"
+                    />
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg border-2 border-yellow-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      HRA Exemption (Auto-calculated)
+                    </label>
+                    <div className="text-xl font-bold text-yellow-600">
+                      {formatCurrency(calculateHRAExemption())}
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-4 rounded-lg border-2 border-yellow-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      LTA Exemption (Auto-calculated)
+                    </label>
+                    <div className="text-xl font-bold text-yellow-600">
+                      {formatCurrency(calculateLTAExemption())}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Results Section */}
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          {/* Old Regime Card */}
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg mb-6">
+              <h2 className="text-2xl font-bold">Old Tax Regime</h2>
+              <p className="text-sm opacity-90">With all deductions & exemptions</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Deductions Applied:</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Standard Deduction:</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.standard)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>HRA Exemption:</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.hra)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>LTA Exemption:</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.lta)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Section 80C:</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.section80C)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Section 80D:</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.section80D)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>NPS 80CCD(1B):</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.nps80CCD1B)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Education Loan (80E):</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.eduLoan)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Home Loan Interest:</span>
+                    <span className="font-medium">{formatCurrency(oldRegime.deductions.homeLoanInt)}</span>
+                  </div>
+                  {oldRegime.deductions.donations > 0 && (
+                    <div className="flex justify-between">
+                      <span>Donations (80G):</span>
+                      <span className="font-medium">{formatCurrency(oldRegime.deductions.donations)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="border-t-2 border-gray-200 pt-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-600">Taxable Income:</span>
+                  <span className="font-semibold text-lg">{formatCurrency(oldRegime.taxableIncome)}</span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-800 font-semibold text-lg">Tax Payable:</span>
+                  <span className="font-bold text-3xl text-orange-600">{formatCurrency(oldRegime.tax)}</span>
+                </div>
+
+                <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-lg shadow-lg p-4 text-white">
+                  <h4 className="text-sm font-semibold mb-3">Monthly In-Hand Breakdown</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Monthly Salary:</span>
+                      <span className="font-bold text-lg">{formatCurrency(oldRegimeInHand.monthly)}</span>
+                    </div>
+                    <div className="flex justify-between bg-white/20 p-2 rounded">
+                      <span>+ PF Credit/Month:</span>
+                      <span className="font-semibold">{formatCurrency(oldRegimeInHand.pfPerMonth)}</span>
+                    </div>
+                    {parseFloat(performanceBonus) > 0 && (
+                      <div className="flex justify-between bg-white/20 p-2 rounded">
+                        <span>+ Bonus (after tax):</span>
+                        <span className="font-semibold">{formatCurrency(oldRegimeInHand.bonusAfterTax)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/30">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Total Annual Take Home:</span>
+                      <span className="font-bold text-xl">
+                        {formatCurrency(
+                          oldRegimeInHand.monthly * 12 + 
+                          oldRegimeInHand.pfPerMonth * 12 + 
+                          oldRegimeInHand.bonusAfterTax
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* New Regime Card */}
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-lg mb-6">
+              <h2 className="text-2xl font-bold">New Tax Regime</h2>
+              <p className="text-sm opacity-90">Lower rates, fewer deductions</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2">Deductions Applied:</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Standard Deduction:</span>
+                    <span className="font-medium">{formatCurrency(newRegime.deductions.standard)}</span>
+                  </div>
+                  {newRegime.deductions.nps80CCD2 > 0 && (
+                    <div className="flex justify-between">
+                      <span>Employer NPS (80CCD2):</span>
+                      <span className="font-medium">{formatCurrency(newRegime.deductions.nps80CCD2)}</span>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-2">
+                    Note: HRA, LTA, 80C, 80D, and most other deductions not available in new regime
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t-2 border-gray-200 pt-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-600">Taxable Income:</span>
+                  <span className="font-semibold text-lg">{formatCurrency(newRegime.taxableIncome)}</span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-800 font-semibold text-lg">Tax Payable:</span>
+                  <span className="font-bold text-3xl text-blue-600">{formatCurrency(newRegime.tax)}</span>
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-lg p-4 text-white">
+                  <h4 className="text-sm font-semibold mb-3">Monthly In-Hand Breakdown</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Monthly Salary:</span>
+                      <span className="font-bold text-lg">{formatCurrency(newRegimeInHand.monthly)}</span>
+                    </div>
+                    <div className="flex justify-between bg-white/20 p-2 rounded">
+                      <span>+ PF Credit/Month:</span>
+                      <span className="font-semibold">{formatCurrency(newRegimeInHand.pfPerMonth)}</span>
+                    </div>
+                    {parseFloat(performanceBonus) > 0 && (
+                      <div className="flex justify-between bg-white/20 p-2 rounded">
+                        <span>+ Bonus (after tax):</span>
+                        <span className="font-semibold">{formatCurrency(newRegimeInHand.bonusAfterTax)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/30">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Total Annual Take Home:</span>
+                      <span className="font-bold text-xl">
+                        {formatCurrency(
+                          newRegimeInHand.monthly * 12 + 
+                          newRegimeInHand.pfPerMonth * 12 + 
+                          newRegimeInHand.bonusAfterTax
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Comparison and Recommendation */}
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">💡 Recommendation</h2>
+          {oldRegime.tax < newRegime.tax ? (
+            <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-lg">
+              <p className="text-xl font-bold text-orange-800 mb-3">
+                🎯 Old Regime is better for you!
+              </p>
+              <p className="text-orange-700 text-lg mb-2">
+                You'll save <span className="font-bold text-2xl">{formatCurrency(newRegime.tax - oldRegime.tax)}</span> annually
+              </p>
+              <p className="text-orange-600">
+                That's {formatCurrency((newRegime.tax - oldRegime.tax) / 12)}/month in your pocket! 💰
+              </p>
+              <div className="mt-4 p-3 bg-white rounded">
+                <p className="text-sm text-gray-700">
+                  <strong>Why?</strong> Your tax-saving investments and deductions significantly reduce your taxable income in the old regime.
+                </p>
+              </div>
+            </div>
+          ) : oldRegime.tax > newRegime.tax ? (
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+              <p className="text-xl font-bold text-blue-800 mb-3">
+                🎯 New Regime is better for you!
+              </p>
+              <p className="text-blue-700 text-lg mb-2">
+                You'll save <span className="font-bold text-2xl">{formatCurrency(oldRegime.tax - newRegime.tax)}</span> annually
+              </p>
+              <p className="text-blue-600">
+                That's {formatCurrency((oldRegime.tax - newRegime.tax) / 12)}/month in your pocket! 💰
+              </p>
+              <div className="mt-4 p-3 bg-white rounded">
+                <p className="text-sm text-gray-700">
+                  <strong>Why?</strong> The new regime's lower tax rates and higher standard deduction work better for your income level with fewer deductions.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-gray-50 border-l-4 border-gray-500 p-6 rounded-lg">
+              <p className="text-xl font-bold text-gray-800 mb-2">
+                ⚖️ Both regimes result in the same tax liability.
+              </p>
+              <p className="text-gray-600">
+                You have the flexibility to choose either regime based on your preference.
+              </p>
+            </div>
+          )}
+
+          <div className="mt-6 grid md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-1">Gross Annual Salary</p>
+              <p className="text-xl font-bold text-indigo-600">{formatCurrency(calculateGrossSalary())}</p>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-1">Total Deductions (Old)</p>
+              <p className="text-xl font-bold text-green-600">
+                {formatCurrency(
+                  oldRegime.deductions.standard +
+                  oldRegime.deductions.hra +
+                  oldRegime.deductions.lta +
+                  oldRegime.deductions.section80C +
+                  oldRegime.deductions.section80D +
+                  oldRegime.deductions.nps80CCD1B +
+                  oldRegime.deductions.eduLoan +
+                  oldRegime.deductions.homeLoanInt +
+                  oldRegime.deductions.donations
+                )}
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-1">Effective Tax Rate</p>
+              <p className="text-xl font-bold text-purple-600">
+                {((Math.min(oldRegime.tax, newRegime.tax) / calculateGrossSalary()) * 100).toFixed(2)}%
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
