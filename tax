@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Salary & Tax Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4ff;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Input Section -->
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 mb-6">
+            <div class="flex items-center gap-3 mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="10" x2="16" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="8" y1="10" x2="8" y2="18"/></svg>
+                <h1 class="text-3xl font-bold text-gray-800">India Tax Calculator</h1>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8 rounded">
+                <div class="flex gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <p class="text-sm text-blue-800">Compare tax liability under both regimes for FY 2023-24 (AY 2024-25).</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Column 1: Salary -->
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-700">Income Details</h2>
+                    <div>
+                        <label for="basic-pay" class="block text-sm font-medium text-gray-700 mb-1">Basic Pay (₹/year)</label>
+                        <input type="number" id="basic-pay" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 600000">
+                    </div>
+                    <div>
+                        <label for="hra-received" class="block text-sm font-medium text-gray-700 mb-1">HRA Received (₹/year)</label>
+                        <input type="number" id="hra-received" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 300000">
+                    </div>
+                    <div>
+                        <label for="special-allowance" class="block text-sm font-medium text-gray-700 mb-1">Other Allowances (₹/year)</label>
+                        <input type="number" id="special-allowance" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 200000">
+                    </div>
+                     <div>
+                        <label for="bonus" class="block text-sm font-medium text-gray-700 mb-1">Bonus (₹/year)</label>
+                        <input type="number" id="bonus" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 50000">
+                    </div>
+                </div>
+
+                <!-- Column 2: Deductions -->
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-700">Deductions (Old Regime)</h2>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">80C Investments (₹) <span class="text-xs text-gray-500">Max 1.5L</span></label>
+                        <input type="number" id="elss" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="PPF, ELSS, Insurance">
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Employee PF (₹)</label>
+                        <input type="number" id="employee-pf" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Included in 80C">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Home Loan Interest (₹) <span class="text-xs text-gray-500">Max 2L</span></label>
+                        <input type="number" id="home-loan-interest" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Section 24(b)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Health Insurance (₹)</label>
+                        <input type="number" id="health-insurance" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Section 80D">
+                    </div>
+                </div>
+
+                <!-- Column 3: More Deductions -->
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-700 text-white hidden md:block">.</h2> <!-- Spacer -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Home Loan Principal (₹)</label>
+                        <input type="number" id="home-loan-principal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Included in 80C">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Annual Rent Paid (₹)</label>
+                        <input type="number" id="annual-rent" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="For HRA calculation">
+                    </div>
+                    <div class="flex items-center gap-3 pt-2">
+                        <input type="checkbox" id="metro-city" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500">
+                        <label for="metro-city" class="text-sm font-medium text-gray-700">Living in a Metro City?</label>
+                    </div>
+                </div>
+            </div>
+             <button id="calculate-btn" class="mt-8 w-full md:w-auto md:float-right bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300 ease-in-out">
+                Calculate Tax
+            </button>
+        </div>
+        
+        <div id="results-section" class="hidden">
+             <!-- Recommendation -->
+            <div id="recommendation-container" class="mb-6"></div>
+
+            <!-- Regime Cards -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Old Regime Card -->
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <div class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-lg mb-6">
+                        <h2 class="text-2xl font-bold">Old Tax Regime</h2>
+                        <p class="text-sm opacity-90">With all deductions</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-semibold text-gray-600 mb-2">Deductions Applied:</h3>
+                            <div id="old-deductions-breakdown" class="space-y-1 text-sm"></div>
+                        </div>
+                        <div class="border-t-2 border-gray-200 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-600">Taxable Income:</span>
+                                <span id="old-taxable-income" class="font-semibold text-lg"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-800 font-semibold text-lg">Tax Payable:</span>
+                                <span id="old-total-tax" class="font-bold text-3xl text-orange-600"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- New Regime Card -->
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-lg mb-6">
+                        <h2 class="text-2xl font-bold">New Tax Regime</h2>
+                        <p class="text-sm opacity-90">Lower rates, fewer deductions</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-semibold text-gray-600 mb-2">Deductions Applied:</h3>
+                            <div id="new-deductions-breakdown" class="space-y-1 text-sm"></div>
+                        </div>
+                        <div class="border-t-2 border-gray-200 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-600">Taxable Income:</span>
+                                <span id="new-taxable-income" class="font-semibold text-lg"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-800 font-semibold text-lg">Tax Payable:</span>
+                                <span id="new-total-tax" class="font-bold text-3xl text-blue-600"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const calculateBtn = document.getElementById('calculate-btn');
+        const formatCurrency = (num) => `₹ ${Math.round(num).toLocaleString('en-IN')}`;
+
+        const calculateOldRegimeTax = (income) => {
+            if (income <= 250000) return 0;
+            let tax = 0;
+            if (income > 1000000) tax = 112500 + (income - 1000000) * 0.30;
+            else if (income > 500000) tax = 12500 + (income - 500000) * 0.20;
+            else tax = (income - 250000) * 0.05;
+            return tax;
+        };
+
+        const calculateNewRegimeTax = (income) => {
+            if (income <= 300000) return 0;
+            let tax = 0;
+            if (income > 1500000) tax = 150000 + (income - 1500000) * 0.30;
+            else if (income > 1200000) tax = 90000 + (income - 1200000) * 0.20;
+            else if (income > 900000) tax = 45000 + (income - 900000) * 0.15;
+            else if (income > 600000) tax = 15000 + (income - 600000) * 0.10;
+            else tax = (income - 300000) * 0.05;
+            return tax;
+        };
+        
+        const applyRebateAndCess = (tax, taxableIncome, regime) => {
+            if ((regime === 'old' && taxableIncome <= 500000) || (regime === 'new' && taxableIncome <= 700000)) {
+                tax = 0;
+            }
+            return tax + (tax * 0.04);
+        }
+
+        calculateBtn.addEventListener('click', () => {
+            const basicPay = parseFloat(document.getElementById('basic-pay').value) || 0;
+            const hraReceived = parseFloat(document.getElementById('hra-received').value) || 0;
+            const specialAllowance = parseFloat(document.getElementById('special-allowance').value) || 0;
+            const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+            const employeePf = parseFloat(document.getElementById('employee-pf').value) || 0;
+            const annualRent = parseFloat(document.getElementById('annual-rent').value) || 0;
+            const isMetro = document.getElementById('metro-city').checked;
+            const other80c = parseFloat(document.getElementById('elss').value) || 0;
+            const homeLoanPrincipal = parseFloat(document.getElementById('home-loan-principal').value) || 0;
+            const healthInsurance = parseFloat(document.getElementById('health-insurance').value) || 0;
+            const homeLoanInterest = parseFloat(document.getElementById('home-loan-interest').value) || 0;
+            
+            if (basicPay === 0) {
+                 alert("Please enter your Basic Pay to calculate.");
+                 return;
+            }
+
+            const grossSalary = basicPay + hraReceived + specialAllowance + bonus;
+            const standardDeduction = 50000;
+
+            const hraExemption1 = hraReceived;
+            const hraExemption2 = isMetro ? basicPay * 0.5 : basicPay * 0.4;
+            const hraExemption3 = Math.max(0, annualRent - (basicPay * 0.1));
+            const exemptHRA = Math.min(hraExemption1, hraExemption2, hraExemption3);
+
+            const total80c = Math.min(150000, employeePf + other80c + homeLoanPrincipal);
+            const capped80d = Math.min(25000, healthInsurance);
+            const cappedHomeLoanInterest = Math.min(200000, homeLoanInterest);
+            const totalDeductions = standardDeduction + exemptHRA + total80c + capped80d + cappedHomeLoanInterest;
+
+            // Old Regime
+            const taxableIncomeOld = Math.max(0, grossSalary - totalDeductions);
+            const oldTaxBeforeRebate = calculateOldRegimeTax(taxableIncomeOld);
+            const oldTotalTax = applyRebateAndCess(oldTaxBeforeRebate, taxableIncomeOld, 'old');
+
+            // New Regime
+            const taxableIncomeNew = Math.max(0, grossSalary - standardDeduction);
+            const newTaxBeforeRebate = calculateNewRegimeTax(taxableIncomeNew);
+            const newTotalTax = applyRebateAndCess(newTaxBeforeRebate, taxableIncomeNew, 'new');
+
+            // --- Display Results ---
+            document.getElementById('old-taxable-income').textContent = formatCurrency(taxableIncomeOld);
+            document.getElementById('old-total-tax').textContent = formatCurrency(oldTotalTax);
+            document.getElementById('new-taxable-income').textContent = formatCurrency(taxableIncomeNew);
+            document.getElementById('new-total-tax').textContent = formatCurrency(newTotalTax);
+
+            // Deductions breakdown
+            document.getElementById('old-deductions-breakdown').innerHTML = `
+                <div class="flex justify-between"><span>Standard Deduction:</span> <span class="font-medium">${formatCurrency(standardDeduction)}</span></div>
+                <div class="flex justify-between"><span>HRA Exemption:</span> <span class="font-medium">${formatCurrency(exemptHRA)}</span></div>
+                <div class="flex justify-between"><span>Section 80C:</span> <span class="font-medium">${formatCurrency(total80c)}</span></div>
+                <div class="flex justify-between"><span>Home Loan Interest:</span> <span class="font-medium">${formatCurrency(cappedHomeLoanInterest)}</span></div>
+                 <div class="flex justify-between"><span>Health Insurance:</span> <span class="font-medium">${formatCurrency(capped80d)}</span></div>
+            `;
+            document.getElementById('new-deductions-breakdown').innerHTML = `
+                <div class="flex justify-between"><span>Standard Deduction:</span> <span class="font-medium">${formatCurrency(standardDeduction)}</span></div>
+                <div class="text-xs text-gray-500 mt-2">Note: Other deductions not available in new regime.</div>
+            `;
+
+            // Recommendation
+            const recommendationContainer = document.getElementById('recommendation-container');
+            const taxDifference = Math.abs(oldTotalTax - newTotalTax);
+            if (newTotalTax < oldTotalTax) {
+                recommendationContainer.innerHTML = `
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                      <p class="text-lg font-semibold text-blue-800 mb-1">New Regime is better for you!</p>
+                      <p class="text-blue-700">You'll save ${formatCurrency(taxDifference)} annually by choosing the new tax regime.</p>
+                    </div>`;
+            } else if (oldTotalTax < newTotalTax) {
+                 recommendationContainer.innerHTML = `
+                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded">
+                      <p class="text-lg font-semibold text-orange-800 mb-1">Old Regime is better for you!</p>
+                      <p class="text-orange-700">You'll save ${formatCurrency(taxDifference)} annually by choosing the old tax regime.</p>
+                    </div>`;
+            } else {
+                recommendationContainer.innerHTML = `
+                    <div class="bg-gray-50 border-l-4 border-gray-500 p-4 rounded">
+                      <p class="text-lg font-semibold text-gray-800">Both regimes result in the same tax liability.</p>
+                    </div>`;
+            }
+
+
+            document.getElementById('results-section').classList.remove('hidden');
+        });
+    </script>
+
+</body>
+</html>
+
