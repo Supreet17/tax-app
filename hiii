@@ -261,6 +261,7 @@
         <button class="nav-btn" onclick="switchSlide(7)" id="btn-7"><span>07</span> Mission Critical</button>
         <button class="nav-btn" onclick="switchSlide(8)" id="btn-8"><span>08</span> Results</button>
         <button class="nav-btn" onclick="switchSlide(9)" id="btn-9"><span>09</span> Future Plan</button>
+        <button class="nav-btn" onclick="switchSlide(10)" id="btn-10"><span>10</span> Intro (Alt)</button>
     </nav>
 
     <!-- CONTROLS -->
@@ -523,7 +524,7 @@
             </div>
         </div>
 
-        <!-- SLIDE 5: THE JOURNEY (Export Safe Mode) -->
+        <!-- SLIDE 5: THE JOURNEY -->
         <div class="slide-wrapper" id="slide-5">
             <div class="bg-grid"></div>
             <div class="p-16 h-full flex flex-col box-border">
@@ -833,7 +834,7 @@
             </div>
         </div>
 
-        <!-- SLIDE 9: FUTURE PLAN (AI) -->
+        <!-- SLIDE 9: FUTURE PLAN (AI) - ALIGNMENT FIXED -->
         <div class="slide-wrapper" id="slide-9">
             <div class="bg-grid"></div>
             <div class="p-16 h-full flex flex-col box-border">
@@ -853,12 +854,21 @@
                     
                     <!-- Phase 1 -->
                     <div class="ai-card group">
-                        <div class="ai-icon-box text-cyan-400">📊</div>
-                        <div class="text-cyan-400 font-mono text-sm uppercase tracking-widest mb-2">Phase 1 (Current)</div>
-                        <h3 class="text-3xl font-bold text-white mb-4">Descriptive Analytics</h3>
-                        <p class="text-gray-400 text-lg leading-relaxed flex-1">
+                        <!-- Icon centered -->
+                        <div class="flex justify-center mb-6">
+                            <div class="ai-icon-box text-cyan-400 bg-cyan-500/10 border border-cyan-500/30">📊</div>
+                        </div>
+                        
+                        <!-- Status Label Centered -->
+                        <div class="text-center mb-2">
+                            <div class="inline-block text-cyan-400 font-mono text-sm uppercase tracking-widest border border-cyan-500/30 px-3 py-1 rounded">Phase 1 (Current)</div>
+                        </div>
+                        
+                        <h3 class="text-3xl font-bold text-white mb-4 text-center">Descriptive Analytics</h3>
+                        <p class="text-gray-400 text-lg leading-relaxed flex-1 text-center">
                             Automated collation and visualization of what happened. Real-time tracking of KPIs and stock levels.
                         </p>
+                        
                         <div class="mt-6 pt-4 border-t border-cyan-500/30 w-full flex justify-between items-center">
                             <span class="text-cyan-500 font-bold">STATUS</span>
                             <span class="bg-emerald-500 text-white text-xs px-2 py-1 rounded">LIVE</span>
@@ -867,10 +877,16 @@
 
                     <!-- Phase 2 -->
                     <div class="ai-card group border-purple-500/50 bg-slate-800/80">
-                        <div class="ai-icon-box text-purple-400 border-purple-500/50 bg-purple-500/20">🔮</div>
-                        <div class="text-purple-400 font-mono text-sm uppercase tracking-widest mb-2">Phase 2 (Q3 2025)</div>
-                        <h3 class="text-3xl font-bold text-white mb-4">Predictive Engine</h3>
-                        <p class="text-gray-400 text-lg leading-relaxed flex-1">
+                        <div class="flex justify-center mb-6">
+                            <div class="ai-icon-box text-purple-400 bg-purple-500/10 border border-purple-500/30">🔮</div>
+                        </div>
+                        
+                        <div class="text-center mb-2">
+                             <div class="inline-block text-purple-400 font-mono text-sm uppercase tracking-widest border border-purple-500/30 px-3 py-1 rounded">Phase 2 (Q3 2025)</div>
+                        </div>
+                        
+                        <h3 class="text-3xl font-bold text-white mb-4 text-center">Predictive Engine</h3>
+                        <p class="text-gray-400 text-lg leading-relaxed flex-1 text-center">
                             ML models forecasting sales trends 3 months out. Early warning system for stock-outs before they occur.
                         </p>
                         <div class="mt-6 pt-4 border-t border-purple-500/30 w-full flex justify-between items-center">
@@ -881,10 +897,16 @@
 
                     <!-- Phase 3 -->
                     <div class="ai-card group border-pink-500/50">
-                        <div class="ai-icon-box text-pink-400 border-pink-500/50 bg-pink-500/20">🤖</div>
-                        <div class="text-pink-400 font-mono text-sm uppercase tracking-widest mb-2">Phase 3 (2026)</div>
-                        <h3 class="text-3xl font-bold text-white mb-4">Prescriptive AI</h3>
-                        <p class="text-gray-400 text-lg leading-relaxed flex-1">
+                        <div class="flex justify-center mb-6">
+                            <div class="ai-icon-box text-pink-400 bg-pink-500/10 border border-pink-500/30">🤖</div>
+                        </div>
+                        
+                        <div class="text-center mb-2">
+                             <div class="inline-block text-pink-400 font-mono text-sm uppercase tracking-widest border border-pink-500/30 px-3 py-1 rounded">Phase 3 (2026)</div>
+                        </div>
+                        
+                        <h3 class="text-3xl font-bold text-white mb-4 text-center">Prescriptive AI</h3>
+                        <p class="text-gray-400 text-lg leading-relaxed flex-1 text-center">
                             "TARS, optimize my budget." Autonomous recommendations for media spend allocation and promo intensity.
                         </p>
                         <div class="mt-6 pt-4 border-t border-pink-500/30 w-full flex justify-between items-center">
@@ -895,6 +917,56 @@
 
                 </div>
 
+            </div>
+        </div>
+
+        <!-- SLIDE 10: INTRO (ALT - Safe Mode) -->
+        <div class="slide-wrapper" id="slide-10">
+            <div class="bg-grid"></div>
+            <div class="radar-circle w-[800px] h-[800px] opacity-10"></div>
+            <div class="radar-circle w-[1200px] h-[1200px] opacity-5"></div>
+            <div class="flex flex-col items-center justify-center h-full relative z-10">
+                <div class="flex items-center gap-4 mb-16">
+                    <div class="h-px w-20 bg-gradient-to-l from-cyan-400 to-transparent"></div>
+                    <div class="text-cyan-400 font-mono text-lg tracking-[0.4em] uppercase">Division CPD // E-Commerce</div>
+                    <div class="h-px w-20 bg-gradient-to-r from-cyan-400 to-transparent"></div>
+                </div>
+                
+                <!-- Safe SVG Title -->
+                <div class="mb-10 relative">
+                     <svg width="600" height="200" viewBox="0 0 600 200">
+                        <defs>
+                            <linearGradient id="silverGradientSafe" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#e2e8f0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#94a3b8;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Shadow Layer -->
+                        <text x="52%" y="152" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="bold" font-size="160" fill="rgba(0,0,0,0.5)">TARS</text>
+                        <!-- Main Layer -->
+                        <text x="50%" y="150" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="bold" font-size="160" fill="url(#silverGradientSafe)">TARS</text>
+                     </svg>
+                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] bg-blue-500/20 blur-[100px] -z-10 rounded-full"></div>
+                </div>
+
+                <div class="text-center relative">
+                    <h2 class="text-5xl text-white font-light tracking-wide leading-tight">
+                        <span class="highlight-letter text-cyan-400">T</span>rend 
+                        <span class="highlight-letter text-cyan-400">A</span>nalysis & 
+                        <span class="highlight-letter text-red-500">R</span>ealtime 
+                        <span class="highlight-letter text-red-500">S</span>ignals
+                    </h2>
+                    <div class="flex justify-center mt-10 gap-2">
+                        <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                        <div class="w-32 h-1 bg-gradient-to-r from-cyan-500 to-red-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                    </div>
+                </div>
+                <div class="absolute bottom-16 text-slate-600 font-mono text-xs tracking-widest flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    SYSTEM ONLINE
+                </div>
             </div>
         </div>
 
