@@ -6,7 +6,7 @@
     <title>Project TARS Deck</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -21,7 +21,7 @@
         /* --- SIDEBAR NAV --- */
         #sidebar {
             width: 220px;
-            background: rgba(30, 41, 59, 0.9);
+            background: rgba(30, 41, 59, 0.95);
             border-right: 1px solid rgba(255,255,255,0.1);
             display: flex;
             flex-direction: column;
@@ -176,6 +176,65 @@
             background: #ef4444; border: none; color: white; padding: 8px 20px;
             border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: bold;
         }
+
+        /* Slide 5 Specifics */
+        .evidence-snapshot {
+            width: 100%;
+            height: 250px;
+            background: #1e293b;
+            border: 4px solid white;
+            border-bottom-width: 25px; /* Polaroid Style */
+            transform: rotate(-2deg);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+        .evidence-snapshot:hover {
+            transform: rotate(0deg) scale(1.05);
+            z-index: 20;
+            border-color: #fbbf24;
+        }
+        
+        .step-title {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+            margin-bottom: 20px;
+            /* Gradient Text */
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fbbf24;
+        }
+        
+        .action-text {
+            color: #cbd5e1;
+            font-size: 16px;
+            margin-top: 15px;
+            text-align: center;
+            line-height: 1.4;
+            font-weight: 300;
+        }
     </style>
 </head>
 <body>
@@ -186,6 +245,8 @@
         <button class="nav-btn active" onclick="switchSlide(1)" id="btn-1"><span>01</span> Context</button>
         <button class="nav-btn" onclick="switchSlide(2)" id="btn-2"><span>02</span> Introduction</button>
         <button class="nav-btn" onclick="switchSlide(3)" id="btn-3"><span>03</span> Stakeholders</button>
+        <button class="nav-btn" onclick="switchSlide(4)" id="btn-4"><span>04</span> Collaboration</button>
+        <button class="nav-btn" onclick="switchSlide(5)" id="btn-5"><span>05</span> The Journey</button>
     </nav>
 
     <!-- CONTROLS -->
@@ -399,6 +460,171 @@
             </div>
         </div>
 
+        <!-- SLIDE 4: COLLABORATION (Clean Layout) -->
+        <div class="slide-wrapper" id="slide-4">
+            <div class="bg-grid"></div>
+            <div class="p-16 h-full flex flex-col box-border">
+                <header class="relative z-10 text-center mb-12">
+                    <h1 class="text-5xl font-bold text-white tracking-wider mb-4">
+                        <span class="text-yellow-400">One L'Oréal</span>: Orchestrating a Cross-Functional Ecosystem
+                    </h1>
+                    <div class="inline-flex items-center gap-2 bg-red-500/20 border border-red-500/50 px-4 py-1 rounded-full mt-2">
+                        <span class="text-red-400 font-mono font-bold uppercase tracking-widest text-sm">Collaboration</span>
+                        <span class="text-lg">👥</span> 
+                    </div>
+                </header>
+
+                <div class="relative z-10 text-center mb-20">
+                    <p class="text-xl text-gray-400 mb-4">4 major teams that came together to solve this issue</p>
+                    <h2 class="text-5xl font-bold flex gap-4 justify-center">
+                        <span class="text-pink-500">Marketing,</span>
+                        <span class="text-cyan-400">Ecommerce,</span>
+                        <span class="text-purple-400">SDM,</span>
+                        <span class="text-emerald-400">Media</span>
+                    </h2>
+                </div>
+
+                <div class="relative z-10 flex-1 grid grid-cols-4 gap-8 items-start">
+                    <div class="flex flex-col h-full">
+                        <div class="text-center mb-6">
+                            <h3 class="text-3xl font-bold text-white leading-tight">Problem<br>Acceptance</h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-col h-full">
+                        <div class="text-center mb-6">
+                            <h3 class="text-3xl font-bold text-white leading-tight">Brainstorming</h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-col h-full">
+                        <div class="text-center mb-6">
+                            <h3 class="text-3xl font-bold text-white leading-tight">Co-creation</h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-col h-full">
+                        <div class="text-center mb-6">
+                            <h3 class="text-3xl font-bold text-white leading-tight">Implementation</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: THE JOURNEY (Visual Timeline) -->
+        <div class="slide-wrapper" id="slide-5">
+            <div class="bg-grid"></div>
+            <div class="p-16 h-full flex flex-col box-border">
+                
+                <!-- Header (Replica of Slide 4) -->
+                <header class="relative z-10 text-center mb-10">
+                    <h1 class="text-5xl font-bold text-white tracking-wider mb-2">
+                        <span class="text-yellow-400">One L'Oréal</span>: Orchestrating a Cross-Functional Ecosystem
+                    </h1>
+                    <div class="inline-flex items-center gap-2 bg-red-500/20 border border-red-500/50 px-4 py-1 rounded-full mt-2">
+                        <span class="text-red-400 font-mono font-bold uppercase tracking-widest text-sm">Collaboration</span>
+                        <span class="text-lg">👥</span> 
+                    </div>
+                </header>
+
+                <!-- Teams & Description (Updated) -->
+                <div class="relative z-10 text-center mb-16">
+                    <p class="text-xl text-gray-400 mb-4">4 major teams that came together to solve this issue</p>
+                    <h2 class="text-6xl font-bold flex gap-6 justify-center">
+                        <span class="text-pink-400">Marketing,</span>
+                        <span class="text-cyan-300">Ecommerce,</span>
+                        <span class="text-purple-300">SDM,</span>
+                        <span class="text-emerald-300">Media</span>
+                    </h2>
+                </div>
+
+                <!-- 4-Column Timeline -->
+                <div class="relative z-10 flex-1 grid grid-cols-4 gap-8 items-start relative mt-20">
+                    
+                    <!-- Connecting Flow Line -->
+                    <div class="absolute top-[180px] left-20 right-20 h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-emerald-500 opacity-40 z-0 rounded-full"></div>
+
+                    <!-- Step 1 -->
+                    <div class="flex flex-col h-full relative z-10 group">
+                        <div class="text-center mb-8">
+                            <h3 class="step-title text-4xl text-pink-300 drop-shadow-lg">Problem<br>Acceptance</h3>
+                        </div>
+                        
+                        <!-- Evidence Box -->
+                        <div class="evidence-snapshot" style="transform: rotate(-2deg);">
+                            <div class="text-4xl mb-3 text-pink-400">🎤</div>
+                            <div class="text-gray-500 text-xs font-mono uppercase">Paste Interview<br>Photo Here</div>
+                        </div>
+                        
+                        <!-- Connecting Dot -->
+                        <div class="mx-auto -mt-3 w-5 h-5 bg-pink-500 rounded-full border-4 border-[#0f172a] shadow-lg shadow-pink-500/50 z-20 relative"></div>
+
+                        <!-- Key Action Text -->
+                        <div class="action-text">
+                            <span class="stat-badge text-pink-400 border-pink-500/50">15+ Interviews</span>
+                            <div class="mt-2 text-gray-300 font-light">Mapped existing workflows and identified key friction points.</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="flex flex-col h-full relative z-10 group">
+                        <div class="text-center mb-8">
+                            <h3 class="step-title text-4xl text-cyan-300 drop-shadow-lg">Brainstorming</h3>
+                        </div>
+                        
+                        <div class="evidence-snapshot" style="transform: rotate(1deg);">
+                            <div class="text-4xl mb-3 text-cyan-400">💡</div>
+                            <div class="text-gray-500 text-xs font-mono uppercase">Paste Whiteboard<br>Photo Here</div>
+                        </div>
+                        
+                        <div class="mx-auto -mt-3 w-5 h-5 bg-cyan-500 rounded-full border-4 border-[#0f172a] shadow-lg shadow-cyan-500/50 z-20 relative"></div>
+
+                        <div class="action-text">
+                            <span class="stat-badge text-cyan-400 border-cyan-500/50">5 Sprints</span>
+                            <div class="mt-2 text-gray-300 font-light">Rapid ideation sessions to sketch the ideal data flow.</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="flex flex-col h-full relative z-10 group">
+                        <div class="text-center mb-8">
+                            <h3 class="step-title text-4xl text-purple-300 drop-shadow-lg">Co-creation</h3>
+                        </div>
+                        
+                        <div class="evidence-snapshot" style="transform: rotate(-1deg);">
+                            <div class="text-4xl mb-3 text-purple-400">⚙️</div>
+                            <div class="text-gray-500 text-xs font-mono uppercase">Paste Demo<br>Photo Here</div>
+                        </div>
+                        
+                        <div class="mx-auto -mt-3 w-5 h-5 bg-purple-500 rounded-full border-4 border-[#0f172a] shadow-lg shadow-purple-500/50 z-20 relative"></div>
+
+                        <div class="action-text">
+                            <span class="stat-badge text-purple-400 border-purple-500/50">3 Prototypes</span>
+                            <div class="mt-2 text-gray-300 font-light">Collaborative building using Power Query and Agile feedback loops.</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="flex flex-col h-full relative z-10 group">
+                        <div class="text-center mb-8">
+                            <h3 class="step-title text-4xl text-emerald-300 drop-shadow-lg">Implementation</h3>
+                        </div>
+                        
+                        <div class="evidence-snapshot" style="transform: rotate(2deg);">
+                            <div class="text-4xl mb-3 text-emerald-400">🚀</div>
+                            <div class="text-gray-500 text-xs font-mono uppercase">Paste Launch<br>Photo Here</div>
+                        </div>
+                        
+                        <div class="mx-auto -mt-3 w-5 h-5 bg-emerald-500 rounded-full border-4 border-[#0f172a] shadow-lg shadow-emerald-500/50 z-20 relative"></div>
+
+                        <div class="action-text">
+                            <span class="stat-badge text-emerald-400 border-emerald-500/50">Live in 4 Weeks</span>
+                            <div class="mt-2 text-gray-300 font-light">Full deployment across 4 categories with immediate adoption.</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -475,4 +701,3 @@
     </script>
 </body>
 </html>
-```
