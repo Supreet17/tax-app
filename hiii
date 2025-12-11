@@ -1,1 +1,238 @@
-hi
+Sub BuildTarsSlide()
+    Dim pptSlide As Slide
+    Dim shp As Shape
+    Dim shpGroup As Shape
+    Dim slideWidth As Single
+    Dim slideHeight As Single
+    
+    ' 1. Create a new slide
+    Set pptSlide = ActivePresentation.Slides.Add(ActivePresentation.Slides.Count + 1, ppLayoutBlank)
+    
+    slideWidth = ActivePresentation.PageSetup.slideWidth
+    slideHeight = ActivePresentation.PageSetup.slideHeight
+    
+    ' 2. Background (Dark Navy: #0f172a -> RGB 15, 23, 42)
+    pptSlide.FollowMasterBackground = msoFalse
+    pptSlide.Background.Fill.ForeColor.RGB = RGB(15, 23, 42)
+    pptSlide.Background.Fill.Solid
+    
+    ' 3. Header Title
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 50, 30, slideWidth - 100, 60)
+    With shp.TextFrame.TextRange
+        .Text = "AGILITY IS THE ULTIMATE COMPETITIVE ADVANTAGE"
+        .Font.Name = "Arial Black" ' closest standard match to Oswald
+        .Font.Size = 36
+        .Font.Color.RGB = RGB(255, 255, 255)
+        .ParagraphFormat.Alignment = ppAlignLeft
+    End With
+    
+    ' 4. Header Subtitle
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, slideWidth - 250, 45, 200, 30)
+    With shp.TextFrame.TextRange
+        .Text = "PROJECT TARS // CONTEXT"
+        .Font.Name = "Arial"
+        .Font.Size = 10
+        .Font.Color.RGB = RGB(156, 163, 175) ' Gray-400
+        .ParagraphFormat.Alignment = ppAlignRight
+    End With
+    
+    ' 5. Separator Line
+    Set shp = pptSlide.Shapes.AddConnector(msoConnectorStraight, 50, 90, slideWidth - 50, 90)
+    shp.Line.ForeColor.RGB = RGB(55, 65, 81)
+    
+    ' ================= LEFT COLUMN =================
+    
+    ' 6. Image Container (Historical Case Study)
+    ' Attempt to load image from URL, fallback to gray box if offline
+    On Error Resume Next
+    Set shp = pptSlide.Shapes.AddPicture("https://upload.wikimedia.org/wikipedia/commons/2/22/North_American_F-86F_Sabre_in_flight_over_Korea_in_1953.jpg", _
+        msoFalse, msoTrue, 50, 120, 450, 250)
+    If Err.Number <> 0 Then
+        ' Fallback shape if internet blocks image
+        Set shp = pptSlide.Shapes.AddShape(msoShapeRoundedRectangle, 50, 120, 450, 250)
+        shp.Fill.ForeColor.RGB = RGB(40, 50, 70)
+    End If
+    On Error GoTo 0
+    
+    ' Image Styling
+    With shp
+        .LockAspectRatio = msoFalse
+        .Width = 450
+        .Height = 250
+        ' Add a subtle border
+        .Line.Visible = msoTrue
+        .Line.ForeColor.RGB = RGB(71, 85, 105)
+        .Line.Weight = 1
+    End With
+    
+    ' Overlay Text on Image
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 50, 300, 450, 60)
+    With shp.TextFrame.TextRange
+        .Text = "HISTORICAL CASE STUDY" & vbCrLf & "F-86 SABRE vs MiG-15"
+        .Font.Name = "Arial Black"
+        .Font.Color.RGB = RGB(255, 255, 255)
+        .ParagraphFormat.Alignment = ppAlignCenter
+        .Runs(1, 21).Font.Size = 10
+        .Runs(1, 21).Font.Color.RGB = RGB(34, 211, 238) ' Cyan
+        .Runs(22, 20).Font.Size = 24
+    End With
+    
+    ' 7. Comparison Box (Glass Panel)
+    Dim boxTop As Single
+    boxTop = 400
+    Set shp = pptSlide.Shapes.AddShape(msoShapeRoundedRectangle, 50, boxTop, 450, 180)
+    With shp
+        .Fill.ForeColor.RGB = RGB(255, 255, 255)
+        .Fill.Transparency = 0.9 ' Glass effect
+        .Line.ForeColor.RGB = RGB(100, 100, 100)
+        .Line.Weight = 0.5
+    End With
+    
+    ' Comparison Title
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 70, boxTop + 20, 300, 30)
+    With shp.TextFrame.TextRange
+        .Text = "6 Months Earlier vs Now"
+        .Font.Name = "Arial"
+        .Font.Bold = msoTrue
+        .Font.Size = 14
+        .Font.Color.RGB = RGB(255, 255, 255)
+    End With
+    
+    ' Comparison Data Left
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 70, boxTop + 60, 200, 50)
+    With shp.TextFrame.TextRange
+        .Text = "THE OLD WAY" & vbCrLf & "Delay of N+20 days"
+        .Font.Name = "Arial"
+        .Font.Color.RGB = RGB(209, 213, 219)
+        .Font.Size = 10
+        .Runs(12, 18).Font.Size = 14
+        .Runs(12, 18).Font.Color.RGB = RGB(248, 113, 113) ' Red
+        .Runs(12, 18).Font.Bold = msoTrue
+    End With
+    
+    ' Comparison Data Right
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 280, boxTop + 60, 200, 50)
+    With shp.TextFrame.TextRange
+        .Text = "WITH TARS" & vbCrLf & "Live Offtake Data"
+        .Font.Name = "Arial"
+        .Font.Color.RGB = RGB(209, 213, 219)
+        .Font.Size = 10
+        .Runs(10, 17).Font.Size = 14
+        .Runs(10, 17).Font.Color.RGB = RGB(52, 211, 153) ' Green
+        .Runs(10, 17).Font.Bold = msoTrue
+    End With
+    
+    ' Quote at bottom
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 70, boxTop + 120, 410, 40)
+    With shp.TextFrame.TextRange
+        .Text = """We no longer observe... we ACT!"""
+        .Font.Name = "Arial"
+        .Font.Italic = msoTrue
+        .Font.Size = 16
+        .Font.Color.RGB = RGB(255, 255, 255)
+        .ParagraphFormat.Alignment = ppAlignCenter
+        ' Highlight ACT
+        Dim iStart As Integer
+        iStart = InStr(1, .Text, "ACT")
+        If iStart > 0 Then
+            .Runs(iStart, 4).Font.Color.RGB = RGB(239, 68, 68) ' Red
+            .Runs(iStart, 4).Font.Bold = msoTrue
+        End If
+    End With
+    
+    ' ================= RIGHT COLUMN =================
+    
+    ' 8. The Big Stat (10:1)
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 550, 120, 300, 150)
+    With shp.TextFrame.TextRange
+        .Text = "10:1"
+        .Font.Name = "Arial Black"
+        .Font.Size = 120
+        .ParagraphFormat.Alignment = ppAlignLeft
+        
+        ' Gradient Text fill
+        .Font.Fill.TwoColorGradient msoGradientVertical, 1
+        .Font.Fill.GradientStops(1).Color.RGB = RGB(251, 191, 36) ' Gold
+        .Font.Fill.GradientStops(2).Color.RGB = RGB(217, 119, 6)  ' Dark Orange
+    End With
+    
+    ' Stat Label
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 560, 120, 300, 20)
+    With shp.TextFrame.TextRange
+        .Text = "KILL / DEATH RATIO"
+        .Font.Name = "Arial"
+        .Font.Size = 10
+        .Font.Color.RGB = RGB(156, 163, 175)
+        .Font.Bold = msoTrue
+    End With
+    
+    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 560, 260, 300, 20)
+    With shp.TextFrame.TextRange
+        .Text = "US AIR FORCE SUPERIORITY"
+        .Font.Name = "Arial"
+        .Font.Size = 10
+        .Font.Color.RGB = RGB(156, 163, 175)
+    End With
+    
+    ' 9. OODA Loop (Vertical)
+    Dim oodaTop As Single
+    oodaTop = 320
+    
+    ' Vertical Line
+    Set shp = pptSlide.Shapes.AddLine(570, oodaTop, 570, oodaTop + 200)
+    shp.Line.ForeColor.RGB = RGB(100, 100, 100)
+    shp.Line.Weight = 2
+    
+    ' Loop through O O D A
+    Dim labels As Variant
+    Dim i As Integer
+    labels = Array("Observe", "Orient", "Decide", "ACT")
+    
+    For i = 0 To 3
+        ' Dot
+        Set shp = pptSlide.Shapes.AddShape(msoShapeOval, 564, oodaTop + (i * 60), 12, 12)
+        shp.Line.Visible = msoFalse
+        If i = 3 Then
+            shp.Fill.ForeColor.RGB = RGB(239, 68, 68) ' Red for ACT
+            ' Glow effect (simulated with shadow)
+            shp.Shadow.Type = msoShadow25
+            shp.Shadow.ForeColor.RGB = RGB(239, 68, 68)
+            shp.Shadow.Blur = 10
+        Else
+            shp.Fill.ForeColor.RGB = RGB(255, 255, 255)
+        End If
+        
+        ' Text
+        Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 590, oodaTop + (i * 60) - 10, 300, 40)
+        With shp.TextFrame.TextRange
+            .Text = labels(i)
+            .Font.Name = "Arial"
+            If i = 3 Then
+                 .Font.Size = 40
+                 .Font.Bold = msoTrue
+                 .Font.Color.RGB = RGB(239, 68, 68)
+                 .Text = "ACT" & vbCrLf
+            Else
+                 .Font.Size = 24
+                 .Font.Color.RGB = RGB(107, 114, 128)
+                 .Runs(1, 1).Font.Color.RGB = RGB(200, 200, 200) ' Highlight first letter
+                 .Runs(1, 1).Font.Bold = msoTrue
+            End If
+        End With
+        
+        ' Subtext for ACT
+        If i = 3 Then
+            Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 590, oodaTop + (i * 60) + 35, 300, 20)
+            With shp.TextFrame.TextRange
+                .Text = "THE TARS ADVANTAGE"
+                .Font.Name = "Arial"
+                .Font.Size = 10
+                .Font.Color.RGB = RGB(248, 113, 113)
+            End With
+        End If
+        
+    Next i
+
+    MsgBox "Slide Generated! You can now edit text, change the image, or move shapes.", vbInformation, "Done"
+
+End Sub
