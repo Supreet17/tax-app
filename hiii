@@ -1,7 +1,6 @@
-Sub BuildTarsSlide()
+Sub BuildTarsSlide_Fixed()
     Dim pptSlide As Slide
     Dim shp As Shape
-    Dim shpGroup As Shape
     Dim slideWidth As Single
     Dim slideHeight As Single
     
@@ -11,7 +10,7 @@ Sub BuildTarsSlide()
     slideWidth = ActivePresentation.PageSetup.slideWidth
     slideHeight = ActivePresentation.PageSetup.slideHeight
     
-    ' 2. Background (Dark Navy: #0f172a -> RGB 15, 23, 42)
+    ' 2. Background (Dark Navy)
     pptSlide.FollowMasterBackground = msoFalse
     pptSlide.Background.Fill.ForeColor.RGB = RGB(15, 23, 42)
     pptSlide.Background.Fill.Solid
@@ -20,7 +19,7 @@ Sub BuildTarsSlide()
     Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 50, 30, slideWidth - 100, 60)
     With shp.TextFrame.TextRange
         .Text = "AGILITY IS THE ULTIMATE COMPETITIVE ADVANTAGE"
-        .Font.Name = "Arial Black" ' closest standard match to Oswald
+        .Font.Name = "Arial Black"
         .Font.Size = 36
         .Font.Color.RGB = RGB(255, 255, 255)
         .ParagraphFormat.Alignment = ppAlignLeft
@@ -43,12 +42,11 @@ Sub BuildTarsSlide()
     ' ================= LEFT COLUMN =================
     
     ' 6. Image Container (Historical Case Study)
-    ' Attempt to load image from URL, fallback to gray box if offline
     On Error Resume Next
     Set shp = pptSlide.Shapes.AddPicture("https://upload.wikimedia.org/wikipedia/commons/2/22/North_American_F-86F_Sabre_in_flight_over_Korea_in_1953.jpg", _
         msoFalse, msoTrue, 50, 120, 450, 250)
     If Err.Number <> 0 Then
-        ' Fallback shape if internet blocks image
+        ' Fallback if image fails
         Set shp = pptSlide.Shapes.AddShape(msoShapeRoundedRectangle, 50, 120, 450, 250)
         shp.Fill.ForeColor.RGB = RGB(40, 50, 70)
     End If
@@ -59,7 +57,6 @@ Sub BuildTarsSlide()
         .LockAspectRatio = msoFalse
         .Width = 450
         .Height = 250
-        ' Add a subtle border
         .Line.Visible = msoTrue
         .Line.ForeColor.RGB = RGB(71, 85, 105)
         .Line.Weight = 1
@@ -72,9 +69,11 @@ Sub BuildTarsSlide()
         .Font.Name = "Arial Black"
         .Font.Color.RGB = RGB(255, 255, 255)
         .ParagraphFormat.Alignment = ppAlignCenter
-        .Runs(1, 21).Font.Size = 10
-        .Runs(1, 21).Font.Color.RGB = RGB(34, 211, 238) ' Cyan
-        .Runs(22, 20).Font.Size = 24
+        
+        ' FIX 1: Use Characters instead of Runs
+        .Characters(1, 21).Font.Size = 10
+        .Characters(1, 21).Font.Color.RGB = RGB(34, 211, 238) ' Cyan
+        .Characters(22, 20).Font.Size = 24
     End With
     
     ' 7. Comparison Box (Glass Panel)
@@ -83,7 +82,7 @@ Sub BuildTarsSlide()
     Set shp = pptSlide.Shapes.AddShape(msoShapeRoundedRectangle, 50, boxTop, 450, 180)
     With shp
         .Fill.ForeColor.RGB = RGB(255, 255, 255)
-        .Fill.Transparency = 0.9 ' Glass effect
+        .Fill.Transparency = 0.9
         .Line.ForeColor.RGB = RGB(100, 100, 100)
         .Line.Weight = 0.5
     End With
@@ -105,9 +104,11 @@ Sub BuildTarsSlide()
         .Font.Name = "Arial"
         .Font.Color.RGB = RGB(209, 213, 219)
         .Font.Size = 10
-        .Runs(12, 18).Font.Size = 14
-        .Runs(12, 18).Font.Color.RGB = RGB(248, 113, 113) ' Red
-        .Runs(12, 18).Font.Bold = msoTrue
+        
+        ' FIX 1: Use Characters
+        .Characters(12, 18).Font.Size = 14
+        .Characters(12, 18).Font.Color.RGB = RGB(248, 113, 113) ' Red
+        .Characters(12, 18).Font.Bold = msoTrue
     End With
     
     ' Comparison Data Right
@@ -117,9 +118,11 @@ Sub BuildTarsSlide()
         .Font.Name = "Arial"
         .Font.Color.RGB = RGB(209, 213, 219)
         .Font.Size = 10
-        .Runs(10, 17).Font.Size = 14
-        .Runs(10, 17).Font.Color.RGB = RGB(52, 211, 153) ' Green
-        .Runs(10, 17).Font.Bold = msoTrue
+        
+        ' FIX 1: Use Characters
+        .Characters(10, 17).Font.Size = 14
+        .Characters(10, 17).Font.Color.RGB = RGB(52, 211, 153) ' Green
+        .Characters(10, 17).Font.Bold = msoTrue
     End With
     
     ' Quote at bottom
@@ -131,29 +134,30 @@ Sub BuildTarsSlide()
         .Font.Size = 16
         .Font.Color.RGB = RGB(255, 255, 255)
         .ParagraphFormat.Alignment = ppAlignCenter
-        ' Highlight ACT
+        
         Dim iStart As Integer
         iStart = InStr(1, .Text, "ACT")
         If iStart > 0 Then
-            .Runs(iStart, 4).Font.Color.RGB = RGB(239, 68, 68) ' Red
-            .Runs(iStart, 4).Font.Bold = msoTrue
+            .Characters(iStart, 4).Font.Color.RGB = RGB(239, 68, 68) ' Red
+            .Characters(iStart, 4).Font.Bold = msoTrue
         End If
     End With
     
     ' ================= RIGHT COLUMN =================
     
-    ' 8. The Big Stat (10:1)
+    ' 8. The Big Stat (10:1) - FIX 2: TextFrame2 for Gradient
     Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 550, 120, 300, 150)
-    With shp.TextFrame.TextRange
-        .Text = "10:1"
-        .Font.Name = "Arial Black"
-        .Font.Size = 120
-        .ParagraphFormat.Alignment = ppAlignLeft
-        
-        ' Gradient Text fill
-        .Font.Fill.TwoColorGradient msoGradientVertical, 1
-        .Font.Fill.GradientStops(1).Color.RGB = RGB(251, 191, 36) ' Gold
-        .Font.Fill.GradientStops(2).Color.RGB = RGB(217, 119, 6)  ' Dark Orange
+    
+    ' Set Text First
+    shp.TextFrame.TextRange.Text = "10:1"
+    
+    ' Apply Formatting using TextFrame2 (Modern API)
+    With shp.TextFrame2.TextRange.Font
+        .Name = "Arial Black"
+        .Size = 120
+        .Fill.TwoColorGradient msoGradientVertical, 1
+        .Fill.ForeColor.RGB = RGB(251, 191, 36) ' Gold
+        .Fill.BackColor.RGB = RGB(217, 119, 6)  ' Dark Orange
     End With
     
     ' Stat Label
@@ -183,7 +187,6 @@ Sub BuildTarsSlide()
     shp.Line.ForeColor.RGB = RGB(100, 100, 100)
     shp.Line.Weight = 2
     
-    ' Loop through O O D A
     Dim labels As Variant
     Dim i As Integer
     labels = Array("Observe", "Orient", "Decide", "ACT")
@@ -194,10 +197,11 @@ Sub BuildTarsSlide()
         shp.Line.Visible = msoFalse
         If i = 3 Then
             shp.Fill.ForeColor.RGB = RGB(239, 68, 68) ' Red for ACT
-            ' Glow effect (simulated with shadow)
+            ' Shadow for glow
             shp.Shadow.Type = msoShadow25
             shp.Shadow.ForeColor.RGB = RGB(239, 68, 68)
             shp.Shadow.Blur = 10
+            shp.Shadow.Visible = msoTrue
         Else
             shp.Fill.ForeColor.RGB = RGB(255, 255, 255)
         End If
@@ -211,12 +215,12 @@ Sub BuildTarsSlide()
                  .Font.Size = 40
                  .Font.Bold = msoTrue
                  .Font.Color.RGB = RGB(239, 68, 68)
-                 .Text = "ACT" & vbCrLf
             Else
                  .Font.Size = 24
                  .Font.Color.RGB = RGB(107, 114, 128)
-                 .Runs(1, 1).Font.Color.RGB = RGB(200, 200, 200) ' Highlight first letter
-                 .Runs(1, 1).Font.Bold = msoTrue
+                 ' First letter highlight using Characters
+                 .Characters(1, 1).Font.Color.RGB = RGB(200, 200, 200)
+                 .Characters(1, 1).Font.Bold = msoTrue
             End If
         End With
         
@@ -233,6 +237,6 @@ Sub BuildTarsSlide()
         
     Next i
 
-    MsgBox "Slide Generated! You can now edit text, change the image, or move shapes.", vbInformation, "Done"
+    MsgBox "Slide Generated Successfully!", vbInformation, "Done"
 
 End Sub
