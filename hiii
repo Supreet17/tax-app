@@ -1,242 +1,478 @@
-Sub BuildTarsSlide_Fixed()
-    Dim pptSlide As Slide
-    Dim shp As Shape
-    Dim slideWidth As Single
-    Dim slideHeight As Single
-    
-    ' 1. Create a new slide
-    Set pptSlide = ActivePresentation.Slides.Add(ActivePresentation.Slides.Count + 1, ppLayoutBlank)
-    
-    slideWidth = ActivePresentation.PageSetup.slideWidth
-    slideHeight = ActivePresentation.PageSetup.slideHeight
-    
-    ' 2. Background (Dark Navy)
-    pptSlide.FollowMasterBackground = msoFalse
-    pptSlide.Background.Fill.ForeColor.RGB = RGB(15, 23, 42)
-    pptSlide.Background.Fill.Solid
-    
-    ' 3. Header Title
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 50, 30, slideWidth - 100, 60)
-    With shp.TextFrame.TextRange
-        .Text = "AGILITY IS THE ULTIMATE COMPETITIVE ADVANTAGE"
-        .Font.Name = "Arial Black"
-        .Font.Size = 36
-        .Font.Color.RGB = RGB(255, 255, 255)
-        .ParagraphFormat.Alignment = ppAlignLeft
-    End With
-    
-    ' 4. Header Subtitle
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, slideWidth - 250, 45, 200, 30)
-    With shp.TextFrame.TextRange
-        .Text = "PROJECT TARS // CONTEXT"
-        .Font.Name = "Arial"
-        .Font.Size = 10
-        .Font.Color.RGB = RGB(156, 163, 175) ' Gray-400
-        .ParagraphFormat.Alignment = ppAlignRight
-    End With
-    
-    ' 5. Separator Line
-    Set shp = pptSlide.Shapes.AddConnector(msoConnectorStraight, 50, 90, slideWidth - 50, 90)
-    shp.Line.ForeColor.RGB = RGB(55, 65, 81)
-    
-    ' ================= LEFT COLUMN =================
-    
-    ' 6. Image Container (Historical Case Study)
-    On Error Resume Next
-    Set shp = pptSlide.Shapes.AddPicture("https://upload.wikimedia.org/wikipedia/commons/2/22/North_American_F-86F_Sabre_in_flight_over_Korea_in_1953.jpg", _
-        msoFalse, msoTrue, 50, 120, 450, 250)
-    If Err.Number <> 0 Then
-        ' Fallback if image fails
-        Set shp = pptSlide.Shapes.AddShape(msoShapeRoundedRectangle, 50, 120, 450, 250)
-        shp.Fill.ForeColor.RGB = RGB(40, 50, 70)
-    End If
-    On Error GoTo 0
-    
-    ' Image Styling
-    With shp
-        .LockAspectRatio = msoFalse
-        .Width = 450
-        .Height = 250
-        .Line.Visible = msoTrue
-        .Line.ForeColor.RGB = RGB(71, 85, 105)
-        .Line.Weight = 1
-    End With
-    
-    ' Overlay Text on Image
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 50, 300, 450, 60)
-    With shp.TextFrame.TextRange
-        .Text = "HISTORICAL CASE STUDY" & vbCrLf & "F-86 SABRE vs MiG-15"
-        .Font.Name = "Arial Black"
-        .Font.Color.RGB = RGB(255, 255, 255)
-        .ParagraphFormat.Alignment = ppAlignCenter
-        
-        ' FIX 1: Use Characters instead of Runs
-        .Characters(1, 21).Font.Size = 10
-        .Characters(1, 21).Font.Color.RGB = RGB(34, 211, 238) ' Cyan
-        .Characters(22, 20).Font.Size = 24
-    End With
-    
-    ' 7. Comparison Box (Glass Panel)
-    Dim boxTop As Single
-    boxTop = 400
-    Set shp = pptSlide.Shapes.AddShape(msoShapeRoundedRectangle, 50, boxTop, 450, 180)
-    With shp
-        .Fill.ForeColor.RGB = RGB(255, 255, 255)
-        .Fill.Transparency = 0.9
-        .Line.ForeColor.RGB = RGB(100, 100, 100)
-        .Line.Weight = 0.5
-    End With
-    
-    ' Comparison Title
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 70, boxTop + 20, 300, 30)
-    With shp.TextFrame.TextRange
-        .Text = "6 Months Earlier vs Now"
-        .Font.Name = "Arial"
-        .Font.Bold = msoTrue
-        .Font.Size = 14
-        .Font.Color.RGB = RGB(255, 255, 255)
-    End With
-    
-    ' Comparison Data Left
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 70, boxTop + 60, 200, 50)
-    With shp.TextFrame.TextRange
-        .Text = "THE OLD WAY" & vbCrLf & "Delay of N+20 days"
-        .Font.Name = "Arial"
-        .Font.Color.RGB = RGB(209, 213, 219)
-        .Font.Size = 10
-        
-        ' FIX 1: Use Characters
-        .Characters(12, 18).Font.Size = 14
-        .Characters(12, 18).Font.Color.RGB = RGB(248, 113, 113) ' Red
-        .Characters(12, 18).Font.Bold = msoTrue
-    End With
-    
-    ' Comparison Data Right
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 280, boxTop + 60, 200, 50)
-    With shp.TextFrame.TextRange
-        .Text = "WITH TARS" & vbCrLf & "Live Offtake Data"
-        .Font.Name = "Arial"
-        .Font.Color.RGB = RGB(209, 213, 219)
-        .Font.Size = 10
-        
-        ' FIX 1: Use Characters
-        .Characters(10, 17).Font.Size = 14
-        .Characters(10, 17).Font.Color.RGB = RGB(52, 211, 153) ' Green
-        .Characters(10, 17).Font.Bold = msoTrue
-    End With
-    
-    ' Quote at bottom
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 70, boxTop + 120, 410, 40)
-    With shp.TextFrame.TextRange
-        .Text = """We no longer observe... we ACT!"""
-        .Font.Name = "Arial"
-        .Font.Italic = msoTrue
-        .Font.Size = 16
-        .Font.Color.RGB = RGB(255, 255, 255)
-        .ParagraphFormat.Alignment = ppAlignCenter
-        
-        Dim iStart As Integer
-        iStart = InStr(1, .Text, "ACT")
-        If iStart > 0 Then
-            .Characters(iStart, 4).Font.Color.RGB = RGB(239, 68, 68) ' Red
-            .Characters(iStart, 4).Font.Bold = msoTrue
-        End If
-    End With
-    
-    ' ================= RIGHT COLUMN =================
-    
-    ' 8. The Big Stat (10:1) - FIX 2: TextFrame2 for Gradient
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 550, 120, 300, 150)
-    
-    ' Set Text First
-    shp.TextFrame.TextRange.Text = "10:1"
-    
-    ' Apply Formatting using TextFrame2 (Modern API)
-    With shp.TextFrame2.TextRange.Font
-        .Name = "Arial Black"
-        .Size = 120
-        .Fill.TwoColorGradient msoGradientVertical, 1
-        .Fill.ForeColor.RGB = RGB(251, 191, 36) ' Gold
-        .Fill.BackColor.RGB = RGB(217, 119, 6)  ' Dark Orange
-    End With
-    
-    ' Stat Label
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 560, 120, 300, 20)
-    With shp.TextFrame.TextRange
-        .Text = "KILL / DEATH RATIO"
-        .Font.Name = "Arial"
-        .Font.Size = 10
-        .Font.Color.RGB = RGB(156, 163, 175)
-        .Font.Bold = msoTrue
-    End With
-    
-    Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 560, 260, 300, 20)
-    With shp.TextFrame.TextRange
-        .Text = "US AIR FORCE SUPERIORITY"
-        .Font.Name = "Arial"
-        .Font.Size = 10
-        .Font.Color.RGB = RGB(156, 163, 175)
-    End With
-    
-    ' 9. OODA Loop (Vertical)
-    Dim oodaTop As Single
-    oodaTop = 320
-    
-    ' Vertical Line
-    Set shp = pptSlide.Shapes.AddLine(570, oodaTop, 570, oodaTop + 200)
-    shp.Line.ForeColor.RGB = RGB(100, 100, 100)
-    shp.Line.Weight = 2
-    
-    Dim labels As Variant
-    Dim i As Integer
-    labels = Array("Observe", "Orient", "Decide", "ACT")
-    
-    For i = 0 To 3
-        ' Dot
-        Set shp = pptSlide.Shapes.AddShape(msoShapeOval, 564, oodaTop + (i * 60), 12, 12)
-        shp.Line.Visible = msoFalse
-        If i = 3 Then
-            shp.Fill.ForeColor.RGB = RGB(239, 68, 68) ' Red for ACT
-            ' Shadow for glow
-            shp.Shadow.Type = msoShadow25
-            shp.Shadow.ForeColor.RGB = RGB(239, 68, 68)
-            shp.Shadow.Blur = 10
-            shp.Shadow.Visible = msoTrue
-        Else
-            shp.Fill.ForeColor.RGB = RGB(255, 255, 255)
-        End If
-        
-        ' Text
-        Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 590, oodaTop + (i * 60) - 10, 300, 40)
-        With shp.TextFrame.TextRange
-            .Text = labels(i)
-            .Font.Name = "Arial"
-            If i = 3 Then
-                 .Font.Size = 40
-                 .Font.Bold = msoTrue
-                 .Font.Color.RGB = RGB(239, 68, 68)
-            Else
-                 .Font.Size = 24
-                 .Font.Color.RGB = RGB(107, 114, 128)
-                 ' First letter highlight using Characters
-                 .Characters(1, 1).Font.Color.RGB = RGB(200, 200, 200)
-                 .Characters(1, 1).Font.Bold = msoTrue
-            End If
-        End With
-        
-        ' Subtext for ACT
-        If i = 3 Then
-            Set shp = pptSlide.Shapes.AddTextbox(msoTextOrientationHorizontal, 590, oodaTop + (i * 60) + 35, 300, 20)
-            With shp.TextFrame.TextRange
-                .Text = "THE TARS ADVANTAGE"
-                .Font.Name = "Arial"
-                .Font.Size = 10
-                .Font.Color.RGB = RGB(248, 113, 113)
-            End With
-        End If
-        
-    Next i
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project TARS Deck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
 
-    MsgBox "Slide Generated Successfully!", vbInformation, "Done"
+        /* --- SIDEBAR NAV --- */
+        #sidebar {
+            width: 220px;
+            background: rgba(30, 41, 59, 0.9);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 10px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
 
-End Sub
+        .nav-btn {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid transparent;
+            padding: 12px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .nav-btn span {
+            font-family: 'JetBrains Mono', monospace;
+            opacity: 0.6;
+        }
+
+        /* --- TOP CONTROL BAR --- */
+        #control-bar {
+            position: fixed;
+            top: 20px;
+            left: 260px;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: opacity 0.3s;
+        }
+
+        /* --- VIEWPORT --- */
+        #viewport {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: auto;
+            padding-top: 80px;
+        }
+
+        /* --- SLIDE WRAPPER (1920x1080) --- */
+        .slide-wrapper {
+            width: 1920px; 
+            height: 1080px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            position: relative;
+            display: none;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            transform-origin: top center;
+            transition: transform 0.1s ease-out;
+        }
+
+        .slide-wrapper.active {
+            display: block;
+        }
+
+        /* --- SHARED STYLES --- */
+        .bg-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        h1 { font-family: 'Oswald', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
+
+        .quote-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            position: relative;
+            transition: transform 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .photo-placeholder {
+            background-color: rgba(71, 85, 105, 0.3);
+            border-radius: 50%;
+            border: 2px dashed rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        /* Helpers */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        .ooda-step {
+            position: relative; padding-left: 35px; border-left: 4px solid rgba(255, 255, 255, 0.1);
+        }
+        .ooda-step::before {
+            content: ''; position: absolute; left: -10px; top: 0; width: 16px; height: 16px;
+            border-radius: 50%; background-color: #ef4444; box-shadow: 0 0 10px #ef4444;
+        }
+        .radar-circle {
+            position: absolute; border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 50%;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .highlight-letter { font-family: 'Oswald', sans-serif; font-weight: 700; }
+        
+        .btn-action {
+            background: #ef4444; border: none; color: white; padding: 8px 20px;
+            border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav id="sidebar">
+        <div class="text-xs font-mono text-gray-500 mb-2 uppercase tracking-widest">Navigation</div>
+        <button class="nav-btn active" onclick="switchSlide(1)" id="btn-1"><span>01</span> Context</button>
+        <button class="nav-btn" onclick="switchSlide(2)" id="btn-2"><span>02</span> Introduction</button>
+        <button class="nav-btn" onclick="switchSlide(3)" id="btn-3"><span>03</span> Stakeholders</button>
+    </nav>
+
+    <!-- CONTROLS -->
+    <div id="control-bar">
+        <div class="flex items-center gap-3 text-white text-sm">
+            <span>Zoom:</span>
+            <input type="range" id="zoomSlider" min="0.1" max="1.0" step="0.05" value="0.5" style="accent-color: #fbbf24; cursor: pointer;">
+        </div>
+        <button class="btn-action" style="background:#64748b" onclick="hideControls()">Hide UI</button>
+        <button class="btn-action" onclick="saveCurrentSlide()" id="saveBtn">⬇ Save Current Slide (4K)</button>
+    </div>
+
+    <!-- MAIN VIEWPORT -->
+    <div id="viewport">
+        
+        <!-- SLIDE 1: CONTEXT -->
+        <div class="slide-wrapper active" id="slide-1">
+            <div class="bg-grid"></div>
+            <div class="p-16 h-full flex flex-col box-border">
+                <header class="relative z-10 mb-12 border-b border-gray-700 pb-6 flex justify-between items-end">
+                    <h1 class="text-6xl font-bold text-white tracking-wider">Agility is the Ultimate Competitive Advantage</h1>
+                    <div class="text-lg text-gray-400 font-mono tracking-widest">PROJECT TARS // CONTEXT</div>
+                </header>
+                <div class="relative z-10 flex flex-1 gap-20">
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex-1 bg-slate-800/50 rounded-2xl border border-slate-700 relative overflow-hidden group mb-10 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1542456570-5b5c92f15f3e?q=80&w=2574&auto=format&fit=crop" crossorigin="anonymous" alt="Jet Fighter" class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-overlay">
+                            <div class="relative z-20 text-center transform scale-125">
+                                <div class="text-lg font-mono text-cyan-400 mb-4 tracking-widest shadow-black drop-shadow-md">HISTORICAL CASE STUDY</div>
+                                <h2 class="text-5xl font-bold text-white shadow-black drop-shadow-lg">F-86 Sabre <span class="text-gray-300 text-3xl mx-3">VS</span> MiG-15</h2>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-10">
+                            <div class="flex items-center gap-6 mb-6">
+                                <h3 class="text-3xl font-bold text-white">6 Months Earlier vs Now</h3>
+                                <div class="h-px flex-1 bg-gray-700"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-10">
+                                <div>
+                                    <div class="text-sm text-gray-400 uppercase tracking-wide mb-2">The Old Way</div>
+                                    <p class="text-gray-300 text-2xl">Delay of <span class="text-red-400 font-bold">N+20 days</span></p>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-400 uppercase tracking-wide mb-2">With TARS</div>
+                                    <p class="text-emerald-400 font-bold text-2xl">Live Offtake Data</p>
+                                </div>
+                            </div>
+                            <div class="mt-8 pt-8 border-t border-gray-700 text-center">
+                                <p class="text-3xl italic text-white">"We no longer <span class="text-gray-400">observe</span>... we <span class="text-red-500 font-bold uppercase">ACT!</span>"</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-1/3 flex flex-col justify-center">
+                        <div class="mb-10 pl-6 relative">
+                            <div class="text-lg text-gray-400 uppercase tracking-widest mb-1">Kill / Death Ratio</div>
+                            <div style="height: 180px; display: flex; align-items: center;">
+                                <svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="xMinYMid meet">
+                                    <defs>
+                                        <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+                                        </linearGradient>
+                                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                        </filter>
+                                    </defs>
+                                    <text x="0" y="130" font-family="Oswald, sans-serif" font-weight="bold" font-size="160" fill="url(#goldGradient)" style="filter: url(#glow);">10:1</text>
+                                </svg>
+                            </div>
+                            <div class="text-lg text-gray-500 mt-8 tracking-wider">US AIR FORCE SUPERIORITY</div>
+                        </div>
+                        <div class="space-y-10 pl-10">
+                            <div class="ooda-step pb-10"><h3 class="text-5xl font-bold text-gray-500">O<span class="text-3xl text-gray-400 font-normal">bserve</span></h3></div>
+                            <div class="ooda-step pb-10"><h3 class="text-5xl font-bold text-gray-500">O<span class="text-3xl text-gray-400 font-normal">rient</span></h3></div>
+                            <div class="ooda-step pb-10"><h3 class="text-5xl font-bold text-gray-500">D<span class="text-3xl text-gray-400 font-normal">ecide</span></h3></div>
+                            <div class="ooda-step"><h3 class="text-8xl font-bold text-red-500 tracking-wide">ACT</h3><div class="text-xl text-red-400 mt-4 tracking-wide">THE TARS ADVANTAGE</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: INTRO -->
+        <div class="slide-wrapper" id="slide-2">
+            <div class="bg-grid"></div>
+            <div class="radar-circle w-[800px] h-[800px] opacity-10"></div>
+            <div class="radar-circle w-[1200px] h-[1200px] opacity-5"></div>
+            <div class="flex flex-col items-center justify-center h-full relative z-10">
+                <div class="flex items-center gap-4 mb-16">
+                    <div class="h-px w-20 bg-gradient-to-l from-cyan-400 to-transparent"></div>
+                    <div class="text-cyan-400 font-mono text-lg tracking-[0.4em] uppercase">Division CPD // E-Commerce</div>
+                    <div class="h-px w-20 bg-gradient-to-r from-cyan-400 to-transparent"></div>
+                </div>
+                <div class="mb-10 relative">
+                     <svg width="600" height="200" viewBox="0 0 600 200">
+                        <defs>
+                            <linearGradient id="silverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#e2e8f0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#94a3b8;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <text x="50%" y="150" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="bold" font-size="160" fill="url(#silverGradient)" style="letter-spacing: 10px; filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.5));">TARS</text>
+                     </svg>
+                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] bg-blue-500/20 blur-[100px] -z-10 rounded-full"></div>
+                </div>
+                <div class="text-center relative">
+                    <h2 class="text-5xl text-white font-light tracking-wide leading-tight">
+                        <span class="highlight-letter text-cyan-400">T</span>rend 
+                        <span class="highlight-letter text-cyan-400">A</span>nalysis & 
+                        <span class="highlight-letter text-red-500">R</span>ealtime 
+                        <span class="highlight-letter text-red-500">S</span>ignals
+                    </h2>
+                    <div class="flex justify-center mt-10 gap-2">
+                        <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                        <div class="w-32 h-1 bg-gradient-to-r from-cyan-500 to-red-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                    </div>
+                </div>
+                <div class="absolute bottom-16 text-slate-600 font-mono text-xs tracking-widest flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    SYSTEM ONLINE
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: STAKEHOLDERS (Horizontal Layout) -->
+        <div class="slide-wrapper" id="slide-3">
+            <div class="bg-grid"></div>
+            <div class="p-16 h-full flex flex-col box-border">
+                <header class="relative z-10 mb-12 border-b border-gray-700 pb-6 flex justify-between items-end">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            <div class="text-sm font-mono text-red-400 tracking-widest uppercase">Before TARS</div>
+                        </div>
+                        <h1 class="text-6xl font-bold text-white tracking-wider">Stakeholder Painpoints</h1>
+                    </div>
+                    <div class="text-lg text-gray-400 font-mono tracking-widest">STAKEHOLDER FEEDBACK</div>
+                </header>
+
+                <div class="relative z-10 flex-1 grid grid-cols-3 grid-rows-2 gap-8 items-stretch pb-4">
+                    <!-- Box 1 -->
+                    <div class="quote-card p-6">
+                        <div class="flex items-center gap-5 mb-4">
+                            <div class="photo-placeholder w-[80px] h-[80px]">PHOTO</div>
+                            <div class="flex-1 text-left">
+                                <h3 class="text-2xl font-bold text-white leading-tight">Stakeholder Name</h3>
+                                <div class="text-cyan-400 font-mono text-sm mt-1">DESIGNATION / ROLE</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 border border-dashed border-white/10 rounded-lg bg-white/5"></div>
+                    </div>
+                    <!-- Box 2 -->
+                    <div class="quote-card p-6">
+                        <div class="flex items-center gap-5 mb-4">
+                            <div class="photo-placeholder w-[80px] h-[80px]">PHOTO</div>
+                            <div class="flex-1 text-left">
+                                <h3 class="text-2xl font-bold text-white leading-tight">Stakeholder Name</h3>
+                                <div class="text-purple-400 font-mono text-sm mt-1">DESIGNATION / ROLE</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 border border-dashed border-white/10 rounded-lg bg-white/5"></div>
+                    </div>
+                    <!-- Box 3 -->
+                    <div class="quote-card p-6">
+                        <div class="flex items-center gap-5 mb-4">
+                            <div class="photo-placeholder w-[80px] h-[80px]">PHOTO</div>
+                            <div class="flex-1 text-left">
+                                <h3 class="text-2xl font-bold text-white leading-tight">Stakeholder Name</h3>
+                                <div class="text-emerald-400 font-mono text-sm mt-1">DESIGNATION / ROLE</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 border border-dashed border-white/10 rounded-lg bg-white/5"></div>
+                    </div>
+                    <!-- Box 4 -->
+                    <div class="quote-card p-6">
+                        <div class="flex items-center gap-5 mb-4">
+                            <div class="photo-placeholder w-[80px] h-[80px]">PHOTO</div>
+                            <div class="flex-1 text-left">
+                                <h3 class="text-2xl font-bold text-white leading-tight">Stakeholder Name</h3>
+                                <div class="text-yellow-400 font-mono text-sm mt-1">DESIGNATION / ROLE</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 border border-dashed border-white/10 rounded-lg bg-white/5"></div>
+                    </div>
+                    <!-- Box 5 -->
+                    <div class="quote-card p-6">
+                        <div class="flex items-center gap-5 mb-4">
+                            <div class="photo-placeholder w-[80px] h-[80px]">PHOTO</div>
+                            <div class="flex-1 text-left">
+                                <h3 class="text-2xl font-bold text-white leading-tight">Stakeholder Name</h3>
+                                <div class="text-pink-400 font-mono text-sm mt-1">DESIGNATION / ROLE</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 border border-dashed border-white/10 rounded-lg bg-white/5"></div>
+                    </div>
+                    <!-- Box 6 -->
+                    <div class="quote-card p-6">
+                        <div class="flex items-center gap-5 mb-4">
+                            <div class="photo-placeholder w-[80px] h-[80px]">PHOTO</div>
+                            <div class="flex-1 text-left">
+                                <h3 class="text-2xl font-bold text-white leading-tight">Stakeholder Name</h3>
+                                <div class="text-orange-400 font-mono text-sm mt-1">DESIGNATION / ROLE</div>
+                            </div>
+                        </div>
+                        <div class="flex-1 border border-dashed border-white/10 rounded-lg bg-white/5"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const slider = document.getElementById('zoomSlider');
+        let currentSlideId = 'slide-1';
+
+        function switchSlide(num) {
+            currentSlideId = `slide-${num}`;
+            document.querySelectorAll('.slide-wrapper').forEach(el => el.classList.remove('active'));
+            document.getElementById(currentSlideId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${num}`).classList.add('active');
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const val = slider.value;
+            const slide = document.getElementById(currentSlideId);
+            if(slide) {
+                slide.style.transform = `scale(${val})`;
+                slide.style.marginBottom = `${val * 200}px`;
+            }
+        }
+
+        slider.addEventListener('input', applyZoom);
+
+        window.addEventListener('load', () => {
+            const width = window.innerWidth - 240; 
+            const scale = Math.min(width / 2000, 0.8); 
+            slider.value = scale;
+            applyZoom();
+        });
+
+        function hideControls() {
+            document.getElementById('control-bar').style.opacity = '0';
+            document.getElementById('control-bar').style.pointerEvents = 'none';
+            document.getElementById('sidebar').style.opacity = '0';
+        }
+
+        function saveCurrentSlide() {
+            const slide = document.getElementById(currentSlideId);
+            const saveBtn = document.getElementById('saveBtn');
+            const originalTransform = slide.style.transform;
+            const originalMargin = slide.style.marginBottom;
+            
+            saveBtn.innerText = "Generating...";
+            saveBtn.disabled = true;
+            slide.style.transform = "none";
+            slide.style.marginBottom = "0";
+
+            html2canvas(slide, {
+                scale: 2, 
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: "#0f172a"
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `TARS-Slide-${currentSlideId}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                slide.style.transform = originalTransform;
+                slide.style.marginBottom = originalMargin;
+                saveBtn.innerText = "⬇ Save Current Slide (4K)";
+                saveBtn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                alert("Error generating image.");
+                slide.style.transform = originalTransform;
+                slide.style.marginBottom = originalMargin;
+                saveBtn.innerText = "⬇ Save Current Slide (4K)";
+                saveBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
+```
